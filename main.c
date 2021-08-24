@@ -1,5 +1,6 @@
 #include "raylib.h"
 
+
 typedef struct 
 {
     Rectangle rec;
@@ -16,26 +17,35 @@ bool isOnGround(AnimData data, int windowHeight) // check se tá no chão
 
 int main(void){
     // Janela
-    int width = 800;
-    int height = 450;
-    InitWindow(width, height, "Titulo desse ngc");
-
-    
+    int window_width = 800;
+    int window_height = 450;
+    InitWindow(window_width, window_height, "Joguinho IP");
+    SetTargetFPS(60);
 
     // Gravidade 
     const int gravity = 500;
-
     
-    SetTargetFPS(60);
-
+    Texture2D player = LoadTexture("textures/scarfy.png");
+    AnimData player_data;
+    player_data.rec.width = player.width;
+    player_data.rec.height = player.height;
+    player_data.rec.x = 0;
+    player_data.rec.y = 0;
+    player_data.pos.x = window_width/2 - player_data.rec.width/2;
+    player_data.pos.y = window_height - player_data.rec.height;
+     
     while(!WindowShouldClose()){
         BeginDrawing();
-        ClearBackground(WHITE); 
+        ClearBackground(WHITE);
         
-        if(){
+        if(0){ //if deve ser game over
             DrawText("Game over!", 400, 200, 20, RED); 
         }else{
             // Logica start
+            
+
+
+
 
         }
 
