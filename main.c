@@ -24,8 +24,7 @@ int main(void){
 
     // Gravidade 
     const int gravity = 500;
-    Image imagem = LoadImage("textures/scarfy.png");
-    Texture2D player = LoadTextureFromImage(imagem);
+    Texture2D player = LoadTexture("textures/scarfy.png");
     AnimData player_data;
     player_data.rec.width = player.width/6;
     player_data.rec.height = player.height;
