@@ -1,99 +1,206 @@
 #include "raylib.h"
 
-int main(void){
-    // Janela
-    int width = 1000;
-    int height = 500;
-    InitWindow(width, height, "Titulo desse ngc");
+typedef struct 
+{
+    Rectangle rec;
+    Vector2 pos;
+    int frame;
+    float updateTime;
+    float runningTime;
+}AnimData;
 
-    // Circulo 
-    int circle_x = width/5;
-    int circle_y = height/5;
-    int circle_radius = 25;
+bool isOnGround(AnimData data, int windowHeight)
+{
+    return data.pos.y >= windowHeight - data.rec.height;
+}
 
-    // Cantos do circulo 
-    int l_circle_x = circle_x - circle_radius;
-    int r_circle_x = circle_x + circle_radius;
-    int u_circle_y = circle_y - circle_radius;
-    int b_circle_y = circle_y + circle_radius;
 
-    // Axe coordinates
-    int axe_x = 300;
-    int axe_y = 0;
-    int axe_length = 50;
+int main()
+{
+    // array with window dimensions
+    int windowDimensions[2];
+    windowDimensions[0] = 512;
+    windowDimensions[1] = 380;
 
-    int direction = 20;
+    // initialize the window
+    InitWindow(windowDimensions[0], windowDimensions[1], "Dapper Dasher!");
 
-    // Axe cantos
-    int l_axe_x = axe_x;
-    int r_axe_x = axe_x + axe_length;
-    int u_axe_y = axe_y;
-    int b_axe_y = axe_y + axe_length; 
+    // acceleration due to gravity (pixels/s)/s
+    const int gravity = 1000;
 
-    bool collision_with_axe = 
-        (b_axe_y >= u_circle_y) && 
-        (u_axe_y <= b_circle_y) && 
-        (l_axe_x <= r_circle_x) && 
-        (r_axe_x >= l_circle_x);
+    
+
+
+    // scarfy variables
+    AnimData scarfyData;
+    scarfyData.rec.width = 50;
+    scarfyData.rec.height = 50;
+    scarfyData.rec.x = 50;
+    scarfyData.rec.y = 50;
+    scarfyData.pos.x = windowDimensions[0]/2 - scarfyData.rec.width/2;
+    scarfyData.pos.y = windowDimensions[1] - scarfyData.rec.height;
+    scarfyData.frame = 0;
+    scarfyData.updateTime = 1.0/12.0;
+    scarfyData.runningTime = 0.0;
+    DrawRectangle();
+
+    // is the rectanlge in the air?
+    bool isInAir{};
+    // jump velocity (pixels/second)
+    const int jumpVel{-600};
+
+    int velocity{0};
+
+    Texture2D background = LoadTexture("textures/far-buildings.png");
+    float bgX{};
+    Texture2D midground = LoadTexture("textures/back-buildings.png");
+    float mgX{};
+    Texture2D foreground = LoadTexture("textures/foreground.png");
+    float fgX{};
+
+    bool collision{};
 
     SetTargetFPS(60);
+    while (!WindowShouldClose())
+    {
+        // delta time (time since last frame)
+        const float dT{GetFrameTime()};
 
-    while(!WindowShouldClose()){
+        // start drawing
         BeginDrawing();
-        ClearBackground(WHITE); 
-        
-        if(collision_with_axe){
-            DrawText("Game over!", 400, 200, 20, RED); 
-        }else{
+        ClearBackground(WHITE);
 
-            // update cantos
-            l_circle_x = circle_x - circle_radius;
-            r_circle_x = circle_x + circle_radius;
-            u_circle_y = circle_y - circle_radius;
-            b_circle_y = circle_y + circle_radius;
+        // Scroll background
+        bgX -= 20 * dT;
+        if (bgX <= -background.width*2)
+        {
+            bgX = 0.0;
+        }
+        // Scroll the midground
+        mgX -= 40 * dT;
+        if (mgX <= -midground.width*2)
+        {
+            mgX = 0.0;
+        }
+        // Scroll the foreground
+        fgX -= 80 * dT;
+        if (fgX <= -foreground.width*2)
+        {
+            fgX = 0.0;
+        }
 
-            l_axe_x = axe_x;
-            r_axe_x = axe_x + axe_length;
-            u_axe_y = axe_y;
-            b_axe_y = axe_y + axe_length; 
+        // draw the background
+        Vector2 bg1Pos{bgX, 0.0};
+        DrawTextureEx(background, bg1Pos, 0.0, 2.0, WHITE);
+        Vector2 bg2Pos{bgX + background.width*2, 0.0};
+        DrawTextureEx(background, bg2Pos, 0.0, 2.0, WHITE);
 
-            // Update collision
-            collision_with_axe = 
-                (b_axe_y >= u_circle_y) && 
-                (u_axe_y <= b_circle_y) && 
-                (l_axe_x <= r_circle_x) && 
-                (r_axe_x >= l_circle_x);
+        // draw the midground
+        Vector2 mg1Pos{mgX, 0.0};
+        DrawTextureEx(midground, mg1Pos, 0.0, 2.0, WHITE);
+        Vector2 mg2Pos{mgX + midground.width*2, 0.0};
+        DrawTextureEx(midground, mg2Pos, 0.0, 2.0, WHITE);
 
+        // draw the foreground
+        Vector2 fg1Pos{fgX, 0.0};
+        DrawTextureEx(foreground, fg1Pos, 0.0, 2.0, WHITE);
+        Vector2 fg2Pos{fgX + foreground.width*2, 0.0};
+        DrawTextureEx(foreground, fg2Pos, 0.0, 2.0, WHITE);
 
-            // Logica start
+        // perform ground check
+        if (isOnGround(scarfyData, windowDimensions[1]))
+        {
+            // rectangle is on the ground
+            velocity = 0;
+            isInAir = false;
+        }
+        else
+        {
+            // rectangle is in the air
+            velocity += gravity * dT;
+            isInAir = true;
+        }
 
-            DrawCircle(circle_x, circle_y, circle_radius, BLUE);
-            DrawRectangle(axe_x, axe_y, axe_length, axe_length, RED);
-
-            axe_y += direction;
-            if( axe_y > height || axe_y < 0){
-                direction = -direction;
-            }
-
-            if((IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) && circle_x < width){
-                circle_x += 10;
-            }
-            if((IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) && circle_x > 0){
-                circle_x -= 10;
-            }
-            if(IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)){
-                circle_y -= 10;
-            }
-            if(IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)){
-                circle_y += 10;
-            }
-
+        // jump check
+        if (IsKeyPressed(KEY_SPACE) && !isInAir)
+        {
+            velocity += jumpVel;
         }
 
 
-        // Logica end
+        for (int i = 0; i < sizeOfNebulae; i++)
+        {
+            // update the position of each nebula
+            nebulae[i].pos.x += nebVel * dT;
+        }
+
+        // update finishLine
+        finishLine += nebVel * dT;
+
+        // update scarfy position
+        scarfyData.pos.y += velocity * dT;
+
+        // update scarfy's animation frame
+        if (!isInAir)
+        {
+            scarfyData = updateAnimData(scarfyData, dT, 5);
+        }
+
+        for (int i = 0; i < sizeOfNebulae; i++)
+        {
+            nebulae[i] = updateAnimData(nebulae[i], dT, 7);
+        }
+
+        for (AnimData nebula : nebulae)
+        {
+            float pad{50};
+            Rectangle nebRec{
+                nebula.pos.x + pad,
+                nebula.pos.y + pad,
+                nebula.rec.width - 2*pad,
+                nebula.rec.height - 2*pad
+            };
+            Rectangle scarfyRec{
+                scarfyData.pos.x,
+                scarfyData.pos.y,
+                scarfyData.rec.width,
+                scarfyData.rec.height
+            };
+            if (CheckCollisionRecs(nebRec, scarfyRec))
+            {
+                collision = true;
+            }
+        }
+
+        if (collision)
+        {
+            // lose the game
+            DrawText("Game Over!", windowDimensions[0]/4, windowDimensions[1]/2, 40, RED);
+        }
+        else if (scarfyData.pos.x >= finishLine)
+        {
+            // win the game
+            DrawText("You Win!", windowDimensions[0]/4, windowDimensions[1]/2, 40, RED);
+        }
+        else
+        {
+            for (int i = 0; i < sizeOfNebulae; i++)
+            {
+                // draw nebula
+                DrawTextureRec(nebula, nebulae[i].rec, nebulae[i].pos, WHITE);
+            }
+
+            // draw scarfy
+            DrawTextureRec(scarfy, scarfyData.rec, scarfyData.pos, WHITE);
+        }
+
+        // stop drawing
         EndDrawing();
     }
+    UnloadTexture(scarfy);
+    UnloadTexture(nebula);
+    UnloadTexture(background);
+    UnloadTexture(midground);
+    UnloadTexture(foreground);
     CloseWindow();
-    return 0;
 }

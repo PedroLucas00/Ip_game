@@ -2,13 +2,13 @@
 
 int main(void){
     // Janela
-    int width = 800;
-    int height = 450;
+    int width = 1000;
+    int height = 500;
     InitWindow(width, height, "Titulo desse ngc");
 
     // Circulo 
-    int circle_x = width/3;
-    int circle_y = height/3;
+    int circle_x = width/5;
+    int circle_y = height/5;
     int circle_radius = 25;
 
     // Cantos do circulo 
@@ -17,12 +17,16 @@ int main(void){
     int u_circle_y = circle_y - circle_radius;
     int b_circle_y = circle_y + circle_radius;
 
+    // gravidade no circulo
+    int circle_gravity = 10;
+
+
     // Axe coordinates
     int axe_x = 300;
     int axe_y = 0;
     int axe_length = 50;
 
-    int direction = 10;
+    int direction = 20;
 
     // Axe cantos
     int l_axe_x = axe_x;
@@ -64,6 +68,8 @@ int main(void){
                 (l_axe_x <= r_circle_x) && 
                 (r_axe_x >= l_circle_x);
 
+            // Gravidade 
+            circle_y += circle_gravity;
 
             // Logica start
 
@@ -75,16 +81,16 @@ int main(void){
                 direction = -direction;
             }
 
-            if(IsKeyDown(KEY_D) && circle_x < width){
+            if((IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) && circle_x < width){
                 circle_x += 10;
             }
-            if(IsKeyDown(KEY_A) && circle_x > 0){
+            if((IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) && circle_x > 0){
                 circle_x -= 10;
             }
-            if(IsKeyDown(KEY_W)){
+            if(IsKeyDown(KEY_W) || IsKeyDown(KEY_UP)){
                 circle_y -= 10;
             }
-            if(IsKeyDown(KEY_S)){
+            if(IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)){
                 circle_y += 10;
             }
 
