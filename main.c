@@ -2,16 +2,16 @@
 
 int main(void){
     // Janela
-    int width = 800;
-    int height = 450;
-    InitWindow(width, height, "Titulo desse ngc");
+    int width = 1280;
+    int height = 720;
+    InitWindow(width, height, "A Code Adventure");
 
-    // Circulo 
+    // Circulo
     int circle_x = width/3;
     int circle_y = height/3;
     int circle_radius = 25;
 
-    // Cantos do circulo 
+    // Cantos do circulo
     int l_circle_x = circle_x - circle_radius;
     int r_circle_x = circle_x + circle_radius;
     int u_circle_y = circle_y - circle_radius;
@@ -28,22 +28,34 @@ int main(void){
     int l_axe_x = axe_x;
     int r_axe_x = axe_x + axe_length;
     int u_axe_y = axe_y;
-    int b_axe_y = axe_y + axe_length; 
+    int b_axe_y = axe_y + axe_length;
 
-    bool collision_with_axe = 
-        (b_axe_y >= u_circle_y) && 
-        (u_axe_y <= b_circle_y) && 
-        (l_axe_x <= r_circle_x) && 
+    bool collision_with_axe =
+        (b_axe_y >= u_circle_y) &&
+        (u_axe_y <= b_circle_y) &&
+        (l_axe_x <= r_circle_x) &&
         (r_axe_x >= l_circle_x);
 
     SetTargetFPS(60);
 
     while(!WindowShouldClose()){
         BeginDrawing();
-        ClearBackground(WHITE); 
-        
+        ClearBackground(WHITE);
+
         if(collision_with_axe){
-            DrawText("Game over!", 400, 200, 20, RED); 
+            int GAMEOVER_fontsize = 60;
+            DrawText("GAME OVER", width/16, height-(height/4), GAMEOVER_fontsize, RED);
+
+            if(IsKeyDown(KEY_SPACE))
+            {
+                circle_x = width/3;
+                circle_y = height/3;
+
+                axe_x = 300;
+                axe_y = 0;
+
+                collision_with_axe = 0;
+            }
         }else{
 
             // update cantos
@@ -55,15 +67,14 @@ int main(void){
             l_axe_x = axe_x;
             r_axe_x = axe_x + axe_length;
             u_axe_y = axe_y;
-            b_axe_y = axe_y + axe_length; 
+            b_axe_y = axe_y + axe_length;
 
             // Update collision
-            collision_with_axe = 
-                (b_axe_y >= u_circle_y) && 
-                (u_axe_y <= b_circle_y) && 
-                (l_axe_x <= r_circle_x) && 
+            collision_with_axe =
+                (b_axe_y >= u_circle_y) &&
+                (u_axe_y <= b_circle_y) &&
+                (l_axe_x <= r_circle_x) &&
                 (r_axe_x >= l_circle_x);
-
 
             // Logica start
 
@@ -89,7 +100,6 @@ int main(void){
             }
 
         }
-
 
         // Logica end
         EndDrawing();
