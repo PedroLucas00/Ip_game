@@ -1,57 +1,5 @@
 #include "raylib.h"
 
-<<<<<<< Updated upstream
-typedef struct 
-{
-    Rectangle rec;
-    Vector2 pos;
-    int frame;
-    float updateTime;
-    float runningTime;
-}AnimData;
-
-bool isOnGround(AnimData data, int windowHeight)
-{
-    return data.pos.y >= windowHeight - data.rec.height;
-}
-
-
-int main()
-{
-    // array with window dimensions
-    int windowDimensions[2];
-    windowDimensions[0] = 1280; // x
-    windowDimensions[1] = 720; // y
-
-    // initialize the window
-    InitWindow(windowDimensions[0], windowDimensions[1], "Dapper Dasher!");
-
-    // acceleration due to gravity (pixels/s)/s
-    int gravity = 0;
-    int acceleration = 1.5;
-    int temp;
-    
-
-
-    // player variables
-    AnimData scarfyData;
-    scarfyData.rec.width = 50;
-    scarfyData.rec.height = 50;
-    scarfyData.rec.x = 50;
-    scarfyData.rec.y = 50;
-    scarfyData.pos.x = windowDimensions[0]/2 - scarfyData.rec.width/2;
-    scarfyData.pos.y = windowDimensions[1] - scarfyData.rec.height;
-    scarfyData.frame = 0;
-    scarfyData.updateTime = 1.0/12.0;
-    scarfyData.runningTime = 0.0;
-
-    
-    SetTargetFPS(60);
-    while (!WindowShouldClose())
-    {
-        gravity += acceleration;
-        // start drawing
-=======
 // Define functions
 void menu(int width, int height);
 void gameplay(int width, int height);
@@ -88,46 +36,71 @@ void gameplay(int width, int height){
         (r_axe_x >= l_circle_x);
 
     while(!WindowShouldClose()){
->>>>>>> Stashed changes
         BeginDrawing();
         ClearBackground(WHITE);
-        DrawRectangle(scarfyData.pos.x, scarfyData.pos.y, scarfyData.rec.width, scarfyData.rec.height, RED);
-        // gravidade
-        
-        if(!isOnGround(scarfyData, windowDimensions[1])){
-            scarfyData.pos.y += gravity;
-        };
 
-        // controles basicos 
-        if (IsKeyDown(KEY_D))
-        {
-            scarfyData.pos.x += 10;
-        }
-        if (IsKeyDown(KEY_A))
-        {
-            scarfyData.pos.x -= 10;
-        }
-        if(IsKeyPressed(KEY_SPACE) && isOnGround(scarfyData, windowDimensions[1])){
-            gravity -= 30;
-            scarfyData.pos.y -= 1;
+        if(collision_with_axe){
+            int GAMEOVER_fontsize = 60;
+            DrawText("GAME OVER", width/16, height-(height/4), GAMEOVER_fontsize, RED);
 
-        }else if (IsKeyDown(KEY_SPACE) && !isOnGround(scarfyData, windowDimensions[1]) && gravity >= 0)
-        {
-            acceleration = 0.25;
+            if(IsKeyDown(KEY_SPACE))
+            {
+                circle_x = width/3;
+                circle_y = height/3;
+
+                axe_x = 300;
+                axe_y = 0;
+
+                collision_with_axe = 0;
+            }
         }else{
-            if(!isOnGround(scarfyData, windowDimensions[1]))
-            acceleration = 1.5;
+
+            // update cantos
+            l_circle_x = circle_x - circle_radius;
+            r_circle_x = circle_x + circle_radius;
+            u_circle_y = circle_y - circle_radius;
+            b_circle_y = circle_y + circle_radius;
+
+            l_axe_x = axe_x;
+            r_axe_x = axe_x + axe_length;
+            u_axe_y = axe_y;
+            b_axe_y = axe_y + axe_length;
+
+            // Update collision
+            collision_with_axe =
+                (b_axe_y >= u_circle_y) &&
+                (u_axe_y <= b_circle_y) &&
+                (l_axe_x <= r_circle_x) &&
+                (r_axe_x >= l_circle_x);
+
+            // Logica start
+
+            DrawCircle(circle_x, circle_y, circle_radius, BLUE);
+            DrawRectangle(axe_x, axe_y, axe_length, axe_length, RED);
+
+            axe_y += direction;
+            if( axe_y > height || axe_y < 0){
+                direction = -direction;
+            }
+
+            if(IsKeyDown(KEY_D) && circle_x < width){
+                circle_x += 10;
+            }
+            if(IsKeyDown(KEY_A) && circle_x > 0){
+                circle_x -= 10;
+            }
+            if(IsKeyDown(KEY_W)){
+                circle_y -= 10;
+            }
+            if(IsKeyDown(KEY_S)){
+                circle_y += 10;
+            }
+
         }
-        if(isOnGround(scarfyData, windowDimensions[1])){
-            scarfyData.pos.y = windowDimensions[1] - scarfyData.rec.height;
-            gravity = 1;
-        } 
-        // stop drawing
+
+        // Logica end
         EndDrawing();
     }
-<<<<<<< Updated upstream
-     
-=======
 }
 
 void menu(int width, int height){
@@ -174,6 +147,6 @@ int main(void){
     menu(width, height);
     
     // THE END
->>>>>>> Stashed changes
     CloseWindow();
+    return 0;
 }
