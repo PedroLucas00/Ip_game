@@ -26,8 +26,8 @@ void gameplay(int width, int height){
 
 
     // acceleration due to gravity (pixels/s)/s
-    int gravity = 0;
-    int acceleration = 1.5;
+    float gravity = 0;
+    float acceleration = 1.5;
     int temp;
     
 
@@ -47,7 +47,7 @@ void gameplay(int width, int height){
     
     while (!WindowShouldClose())
     {
-        gravity += acceleration;
+        
         // start drawing
         BeginDrawing();
         ClearBackground(WHITE);
@@ -67,21 +67,26 @@ void gameplay(int width, int height){
         {
             scarfyData.pos.x -= 10;
         }
-        if(IsKeyPressed(KEY_SPACE) && isOnGround(scarfyData, windowDimensions[1])){
+        if(IsKeyDown(KEY_SPACE) && isOnGround(scarfyData, windowDimensions[1])){
             gravity -= 30;
             scarfyData.pos.y -= 1;
 
-        }else if (IsKeyDown(KEY_SPACE) && !isOnGround(scarfyData, windowDimensions[1]) && gravity >= 0)
+        }else if (IsKeyDown(KEY_SPACE) && !isOnGround(scarfyData, windowDimensions[1]) && gravity >= 1)
         {
-            acceleration = 0.25;
+            acceleration = 0.18;
         }else{
             if(!isOnGround(scarfyData, windowDimensions[1]))
             acceleration = 1.5;
         }
         if(isOnGround(scarfyData, windowDimensions[1])){
             scarfyData.pos.y = windowDimensions[1] - scarfyData.rec.height;
-            gravity = 1;
+            gravity = 1;   
         } 
+        gravity += acceleration;
+
+        // Tiro do player
+        
+
         // stop drawing
         EndDrawing();
     }
