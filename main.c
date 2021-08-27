@@ -19,19 +19,20 @@ int main()
 {
     // array with window dimensions
     int windowDimensions[2];
-    windowDimensions[0] = 512;
-    windowDimensions[1] = 380;
+    windowDimensions[0] = 1280; // x
+    windowDimensions[1] = 720; // y
 
     // initialize the window
     InitWindow(windowDimensions[0], windowDimensions[1], "Dapper Dasher!");
 
     // acceleration due to gravity (pixels/s)/s
-    const int gravity = 1000;
-
+    int gravity = 0;
+    int acceleration = 1.5;
+    int temp;
     
 
 
-    // scarfy variables
+    // player variables
     AnimData scarfyData;
     scarfyData.rec.width = 50;
     scarfyData.rec.height = 50;
@@ -47,11 +48,16 @@ int main()
     SetTargetFPS(60);
     while (!WindowShouldClose())
     {
-
+        gravity += acceleration;
         // start drawing
         BeginDrawing();
         ClearBackground(WHITE);
         DrawRectangle(scarfyData.pos.x, scarfyData.pos.y, scarfyData.rec.width, scarfyData.rec.height, RED);
+        // gravidade
+        
+        if(!isOnGround(scarfyData, windowDimensions[1])){
+            scarfyData.pos.y += gravity;
+        };
 
         // controles basicos 
         if (IsKeyDown(KEY_D))
@@ -61,14 +67,22 @@ int main()
         if (IsKeyDown(KEY_A))
         {
             scarfyData.pos.x -= 10;
-        }if (IsKeyDown(KEY_W))
-        {
-            scarfyData.pos.y -= 10;
-        }if (IsKeyDown(KEY_S))
-        {
-            scarfyData.pos.y += 10;
         }
+        if(IsKeyPressed(KEY_SPACE) && isOnGround(scarfyData, windowDimensions[1])){
+            gravity -= 30;
+            scarfyData.pos.y -= 1;
 
+        }else if (IsKeyDown(KEY_SPACE) && !isOnGround(scarfyData, windowDimensions[1]) && gravity >= 0)
+        {
+            acceleration = 0.25;
+        }else{
+            if(!isOnGround(scarfyData, windowDimensions[1]))
+            acceleration = 1.5;
+        }
+        if(isOnGround(scarfyData, windowDimensions[1])){
+            scarfyData.pos.y = windowDimensions[1] - scarfyData.rec.height;
+            gravity = 1;
+        } 
         // stop drawing
         EndDrawing();
     }

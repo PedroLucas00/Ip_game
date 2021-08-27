@@ -21,7 +21,7 @@ AnimData updateAnimData(AnimData data, float deltaTime, int maxFrame)
     if (data.runningTime >= data.updateTime)
     {
         data.runningTime = 0.0;
-        // update animation frame
+        // update animation frame 
         data.rec.x = data.frame * data.rec.width;
         data.frame++;
         if (data.frame > maxFrame)

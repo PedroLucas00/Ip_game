@@ -10,6 +10,9 @@ Luan de Oliveira Romancini
 Nicolas Cavalcanti de Brito
 Pedro Lucas da Silva Lucena
 
+- Monitor:
+Murilo 
+
 - Professor: 
 Dificilmente alcançado, nunca superado, único e maravilhoso, onipresente e onipotente
 
