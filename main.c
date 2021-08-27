@@ -1,6 +1,9 @@
 #include "raylib.h"
 
-<<<<<<< Updated upstream
+// Define functions
+void menu(int width, int height);
+void gameplay(int width, int height);
+
 typedef struct 
 {
     Rectangle rec;
@@ -15,16 +18,12 @@ bool isOnGround(AnimData data, int windowHeight)
     return data.pos.y >= windowHeight - data.rec.height;
 }
 
+void gameplay(int width, int height){
 
-int main()
-{
-    // array with window dimensions
     int windowDimensions[2];
-    windowDimensions[0] = 1280; // x
-    windowDimensions[1] = 720; // y
+    windowDimensions[0] = width; // x
+    windowDimensions[1] = height; // y
 
-    // initialize the window
-    InitWindow(windowDimensions[0], windowDimensions[1], "Dapper Dasher!");
 
     // acceleration due to gravity (pixels/s)/s
     int gravity = 0;
@@ -46,49 +45,10 @@ int main()
     scarfyData.runningTime = 0.0;
 
     
-    SetTargetFPS(60);
     while (!WindowShouldClose())
     {
         gravity += acceleration;
         // start drawing
-=======
-// Define functions
-void menu(int width, int height);
-void gameplay(int width, int height);
-
-void gameplay(int width, int height){
-    // Circulo
-    int circle_x = width/3;
-    int circle_y = height/3;
-    int circle_radius = 25;
-
-    // Cantos do circulo
-    int l_circle_x = circle_x - circle_radius;
-    int r_circle_x = circle_x + circle_radius;
-    int u_circle_y = circle_y - circle_radius;
-    int b_circle_y = circle_y + circle_radius;
-
-    // Axe coordinates
-    int axe_x = 300;
-    int axe_y = 0;
-    int axe_length = 50;
-
-    int direction = 10;
-
-    // Axe cantos
-    int l_axe_x = axe_x;
-    int r_axe_x = axe_x + axe_length;
-    int u_axe_y = axe_y;
-    int b_axe_y = axe_y + axe_length;
-
-    bool collision_with_axe =
-        (b_axe_y >= u_circle_y) &&
-        (u_axe_y <= b_circle_y) &&
-        (l_axe_x <= r_circle_x) &&
-        (r_axe_x >= l_circle_x);
-
-    while(!WindowShouldClose()){
->>>>>>> Stashed changes
         BeginDrawing();
         ClearBackground(WHITE);
         DrawRectangle(scarfyData.pos.x, scarfyData.pos.y, scarfyData.rec.width, scarfyData.rec.height, RED);
@@ -125,12 +85,10 @@ void gameplay(int width, int height){
         // stop drawing
         EndDrawing();
     }
-<<<<<<< Updated upstream
-     
-=======
 }
 
 void menu(int width, int height){
+    
     // Menu Variables
     int selected_menu_option = 1;
     int text_menu_size = 45;
@@ -162,18 +120,20 @@ void menu(int width, int height){
 }
 
 int main(void){
-    // Game Window
-    const int width = 1280;
-    const int height = 720;
-    InitWindow(width, height, "A Code Adventure");
+    // array with window dimensions
+    int windowDimensions[2];
+    windowDimensions[0] = 1280; // x
+    windowDimensions[1] = 720; // y
+
+    InitWindow(windowDimensions[0], windowDimensions[1], "A code adventure");
+
     
     // Game FPS
     SetTargetFPS(60);
     
     // Menu
-    menu(width, height);
+    menu(windowDimensions[0], windowDimensions[1]);
     
     // THE END
->>>>>>> Stashed changes
     CloseWindow();
 }

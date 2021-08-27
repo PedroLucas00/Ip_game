@@ -1,4 +1,4 @@
-#include "raylib.h"
+/* #include "raylib.h"
 
 int main(void){
     // Janela
@@ -102,4 +102,4 @@ int main(void){
     }
     CloseWindow();
     return 0;
-}
+} */
