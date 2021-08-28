@@ -56,7 +56,6 @@ int windowDimensions[2];
     windowDimensions[0] = width; // x
     windowDimensions[1] = height; // y
 
-
     // acceleration due to gravity (pixels/s)/s
     float gravity = 0;
     float acceleration = 1.5;
@@ -66,7 +65,7 @@ int windowDimensions[2];
     
     // direção projétil
     // bool shoot_right; // se 1, indo p/ direita, se 0, indo para a esquerda
-    
+
 
     // player variables
     AnimData scarfyData;
@@ -80,6 +79,14 @@ int windowDimensions[2];
     scarfyData.updateTime = 1.0/12.0;
     scarfyData.runningTime = 0.0;
 
+    for(int i = 0; i < MAX_SHOTS; i++){ // no sé que se passa
+            Shoot[i].position = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
+            Shoot[i].speed.x = 3;
+            Shoot[i].radius = 10;
+            Shoot[i].active = false;
+            Shoot[i].color = BLUE;
+            Shoot[i].lifespawn = 0;
+    }
     /* for(int i = 0; i < MAX_SHOTS; i++){
         shoot Shoot[i];
         
@@ -111,11 +118,11 @@ int windowDimensions[2];
             shoot_right = 0;
             scarfyData.pos.x -= 10;
         }
-        if(IsKeyDown(KEY_SPACE) && isOnGround(scarfyData, windowDimensions[1])){
+        if(IsKeyDown(KEY_W) && isOnGround(scarfyData, windowDimensions[1])){
             gravity -= 30;
             scarfyData.pos.y -= 1;
 
-        }else if (IsKeyDown(KEY_SPACE) && !isOnGround(scarfyData, windowDimensions[1]) && gravity >= 1)
+        }else if (IsKeyDown(KEY_W) && !isOnGround(scarfyData, windowDimensions[1]) && gravity >= 1)
         {
             acceleration = 0.18;
         }else{
@@ -130,15 +137,8 @@ int windowDimensions[2];
 
         // Tiro do player
 
-        for(int i = 0; i < MAX_SHOTS; i++){ // no sé que se passa
-            Shoot[i].position = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
-            Shoot[i].speed.x = 3;
-            Shoot[i].radius = 10;
-            Shoot[i].active = false;
-            Shoot[i].color = BLUE;
-            Shoot[i].lifespawn = 0;
-        }
-        if (IsKeyDown(KEY_F))
+        
+        if (IsKeyPressed(KEY_F))
         {
              for(int i = 0; i < MAX_SHOTS; i++){
                  if(!Shoot[i].active){
@@ -152,13 +152,13 @@ int windowDimensions[2];
             if(Shoot[i].active){
                 Shoot[i].position.x += 3;
                 Shoot[i].lifespawn++;
-                if(Shoot[i].position.x >= 800){
+                if(Shoot[i].position.x >= windowDimensions[0] + Shoot[i].radius){
                     Shoot[i].active = false;
                 }
                 if(Shoot[i].active){
                     DrawCircleV(Shoot[i].position, Shoot[i].radius, BLUE);
                 }
-                if(Shoot[i].lifespawn >= 80){
+                if(Shoot[i].lifespawn >= 800){
                     Shoot[i].position = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
                     Shoot[i].speed = (Vector2){0, 0};
                     Shoot[i].lifespawn = 0;
