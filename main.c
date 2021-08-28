@@ -67,6 +67,14 @@ void gameplay(int width, int height){
         {
             scarfyData.pos.x -= 10;
         }
+        if(IsKeyDown(KEY_D) && IsKeyDown(KEY_LEFT_SHIFT))
+        {
+            scarfyData.pos.x += 11;
+        }
+        if(IsKeyDown(KEY_A) && IsKeyDown(KEY_LEFT_SHIFT))
+        {
+            scarfyData.pos.x -= 11;
+        }
         if(IsKeyDown(KEY_SPACE) && isOnGround(scarfyData, windowDimensions[1])){
             gravity -= 30;
             scarfyData.pos.y -= 1;
