@@ -1,6 +1,8 @@
 #include "raylib.h"
 
 #define MAX_SHOTS 5 
+#define MAX_SHOTS_LEFT 5 
+
 // Game screens
 typedef enum{
     MENU,
@@ -44,6 +46,16 @@ typedef struct{
     float radius;
 }shoot;
 
+// atirando para a esquerda
+typedef struct{
+    Vector2 speed_left; 
+    bool active_left;
+    Color color_left;
+    Vector2 position_left;
+    int lifespawn_left;
+    float radius_left;
+}shoot_left;
+
 // Define functions
 int menu(int width, int height);
 int gameplay(int width, int height);
@@ -62,6 +74,7 @@ int windowDimensions[2];
     
     // num tiros
     shoot Shoot[MAX_SHOTS] = {0};
+    shoot_left Shoot_left[MAX_SHOTS_LEFT] = {0};
     
     // direção projétil
     // bool shoot_right; // se 1, indo p/ direita, se 0, indo para a esquerda
@@ -86,6 +99,15 @@ int windowDimensions[2];
             Shoot[i].active = false;
             Shoot[i].color = BLUE;
             Shoot[i].lifespawn = 0;
+    }
+
+    for(int i = 0; i < MAX_SHOTS_LEFT; i++){ // no sé que se passa esquérdita
+            Shoot_left[i].position_left = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
+            Shoot_left[i].speed_left.x = 3;
+            Shoot_left[i].radius_left = 10;
+            Shoot_left[i].active_left = false;
+            Shoot_left[i].color_left = BLUE;
+            Shoot_left[i].lifespawn_left = 0;
     }
     /* for(int i = 0; i < MAX_SHOTS; i++){
         shoot Shoot[i];
@@ -138,7 +160,7 @@ int windowDimensions[2];
         // Tiro do player
 
         
-        if (IsKeyPressed(KEY_F))
+        if (IsKeyPressed(KEY_SPACE) && shoot_right == 1)
         {
              for(int i = 0; i < MAX_SHOTS; i++){
                  if(!Shoot[i].active){
@@ -148,9 +170,10 @@ int windowDimensions[2];
                  }
              }
         }
+
         for(int i = 0; i < MAX_SHOTS; i++){
             if(Shoot[i].active){
-                Shoot[i].position.x += 3;
+                Shoot[i].position.x += 12;
                 Shoot[i].lifespawn++;
                 if(Shoot[i].position.x >= windowDimensions[0] + Shoot[i].radius){
                     Shoot[i].active = false;
@@ -163,6 +186,35 @@ int windowDimensions[2];
                     Shoot[i].speed = (Vector2){0, 0};
                     Shoot[i].lifespawn = 0;
                     Shoot[i].active = false;
+                }
+            }
+        }
+        if (IsKeyPressed(KEY_SPACE) && shoot_right == 0)
+        {
+             for(int i = 0; i < MAX_SHOTS_LEFT; i++){
+                 if(!Shoot_left[i].active_left){
+                     Shoot_left[i].position_left = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
+                     Shoot_left[i].active_left = true;
+                     break;
+                 }
+             }
+        }
+        
+        for(int i = 0; i < MAX_SHOTS_LEFT; i++){  
+            if(Shoot_left[i].active_left){
+                Shoot_left[i].position_left.x -= 12;
+                Shoot_left[i].lifespawn_left++;
+                if(Shoot_left[i].position_left.x <= 0 - Shoot[i].radius){
+                    Shoot_left[i].active_left = false;
+                }
+                if(Shoot_left[i].active_left){
+                    DrawCircleV(Shoot_left[i].position_left, Shoot_left[i].radius_left, BLUE);
+                }
+                if(Shoot_left[i].lifespawn_left >= 800){
+                    Shoot_left[i].position_left = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
+                    Shoot_left[i].speed_left = (Vector2){0, 0};
+                    Shoot_left[i].lifespawn_left = 0;
+                    Shoot_left[i].active_left = false;
                 }
             }
         }
