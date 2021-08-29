@@ -83,13 +83,15 @@ int windowDimensions[2];
     // direção projétil
     // bool shoot_right; // se 1, indo p/ direita, se 0, indo para a esquerda
 
-
+    // Player Animation
+    Texture2D  player = LoadTexture("./Sprites/player_sheet.png");
+    float frameWidth = (float)(player.width/19);  
     // player variables
     AnimData scarfyData;
-    scarfyData.rec.width = 50;
-    scarfyData.rec.height = 50;
-    scarfyData.rec.x = 50;
-    scarfyData.rec.y = 50;
+    scarfyData.rec.width = frameWidth;
+    scarfyData.rec.height = (float)player.height;
+    scarfyData.rec.x = 1;
+    scarfyData.rec.y = 1;
     scarfyData.pos.x = windowDimensions[0]/2 - scarfyData.rec.width/2;
     scarfyData.pos.y = windowDimensions[1] - scarfyData.rec.height;
     scarfyData.frame = 0;
@@ -125,7 +127,11 @@ int windowDimensions[2];
         // start drawing
         BeginDrawing();
         ClearBackground(WHITE);
-        DrawRectangle(scarfyData.pos.x, scarfyData.pos.y, scarfyData.rec.width, scarfyData.rec.height, RED);
+        DrawTextureRec(
+            player,
+            scarfyData.rec,
+            scarfyData.pos,
+            RAYWHITE);
         // gravidade
         for(int i = 0; i < MAX_SHOTS; i++){
         }
