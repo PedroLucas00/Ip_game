@@ -56,6 +56,10 @@ typedef struct{
     float radius_left;
 }shoot_left;
 
+typedef struct{
+    Rectangle rec;
+}level_rec;
+
 // Define functions
 int menu(int width, int height);
 int gameplay(int width, int height);
@@ -217,6 +221,19 @@ int windowDimensions[2];
                     Shoot_left[i].active_left = false;
                 }
             }
+
+            // logica de colisões retangulos level design
+            // primeiro rectangle teste
+            level_rec primeiro;
+            primeiro.rec.x = windowDimensions[0]/2 - primeiro.rec.x/2;
+            primeiro.rec.y = windowDimensions[1] - primeiro.rec.height;  
+            primeiro.rec.width = 150;
+            primeiro.rec.height = 30;
+            DrawRectangle(primeiro.rec.x, primeiro.rec.y, primeiro.rec.width, primeiro.rec.height, GREEN);
+            /* if(CheckCollisionRecs(primeiro.rec, scarfyData.rec)){
+                
+            } */
+
         }
 
         // stop drawing
