@@ -137,11 +137,28 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
     memoryData.rec.height = (float)memory.height;
     memoryData.rec.x = 0.0f;
     memoryData.rec.y = 0.0f;
-    memoryData.pos.x = width/2 - memoryData.rec.width;
-    memoryData.pos.y = height;
+    memoryData.pos.x = 1120;
+    memoryData.pos.y = 0;
     memoryData.frame = 0;
     memoryData.updateTime = 1.0/12.0;
     memoryData.runningTime = 0.0;
+
+    // Memory animation and variables
+    Texture2D  ACM = LoadTexture("./Sprites/ACM_sheet_upscale.png");
+
+    AnimData ACMData;
+    ACMData.rec.width = (float)(ACM.width/9); 
+    ACMData.rec.height = (float)ACM.height;
+    ACMData.rec.x = 0.0f;
+    ACMData.rec.y = 0.0f;
+    ACMData.pos.x = 1060;
+    ACMData.pos.y = 40;
+    ACMData.frame = 0;
+    ACMData.updateTime = 1.0/12.0;
+    ACMData.runningTime = 0.0;
+
+    // platform sprite texture
+    Texture2D  platform = LoadTexture("./Sprites/sand_platform.png");
 
     level_rec prim;
 
@@ -309,14 +326,7 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
                     Shoot[i].active = false;
                 }
                 if(Shoot[i].active){
-                    initAnim = 0;
-                    endAnim = 4;
-                    if (framesCounter >= (60/framesSpeed)){
-                        framesCounter = 0;
-                        currentFrame++;
-                        if (currentFrame > endAnim || currentFrame < initAnim) currentFrame = initAnim;
-                        playerData.rec.x = (float)currentFrame*(float)playerData.rec.width;
-                    }
+                    DrawCircleV(Shoot[i].position, Shoot[i].radius, BLUE);
                 }
                 if(Shoot[i].lifespawn >= 800){
                     Shoot[i].position = (Vector2){playerData.pos.x + 30, playerData.pos.y + 30};
@@ -356,18 +366,16 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
             }
         }
 
-        // memory animation
-        initAnim = 0;
-        endAnim = 1;
-
+        // memory and ACM animation
         if (framesCounter >= (60/framesSpeed))
         {
             framesCounter = 0;
             currentFrame++;
 
-            if (currentFrame > endAnim || currentFrame < initAnim) currentFrame = initAnim;
+            if (currentFrame > 1 || currentFrame < 0) currentFrame = 0;
 
             memoryData.rec.x = (float)currentFrame*(float)memoryData.rec.width;
+            ACMData.rec.x = (float)currentFrame*(float)ACMData.rec.width;
         }
 
         /* bool platformCollision = CheckCollisionRecs(foot, BluePlatform);
@@ -391,8 +399,15 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
             memoryData.rec,
             memoryData.pos,
             WHITE);
-        
-        DrawRectangle(BluePlatform.x, BluePlatform.y, BluePlatform.width, BluePlatform.height, RED);
+
+        DrawTextureRec(
+            ACM,
+            ACMData.rec,
+            ACMData.pos,
+            WHITE);            
+
+
+        DrawRectangle(BluePlatform.x, BluePlatform.y, BluePlatform.width, BluePlatform.height, BLUE);
         DrawRectangle(YellowPlatform.x, YellowPlatform.y, YellowPlatform.width, YellowPlatform.height, YELLOW);
         EndDrawing();
         
