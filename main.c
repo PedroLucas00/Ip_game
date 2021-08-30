@@ -194,9 +194,14 @@ int windowDimensions[2];
         Rectangle foot = {playerData.pos.x, playerData.pos.y, playerData.rec.width, playerData.rec.height};
 
         // PLATFORM RECTANGLES
-        Rectangle BluePlatform = {windowDimensions[0]/2 - 25, windowDimensions[1] - 50, 50, 50};
-        Rectangle YellowPlatform = {windowDimensions[0]/2 + 120, windowDimensions[1] - 220, 125, 50};
-        Rectangle ThirdPlatform = {windowDimensions[0]/2 - 150, windowDimensions[1] - 290, 125, 50};
+        Rectangle FirstPlatform = {windowDimensions[0]/2 - 25, windowDimensions[1] - 0, 50, 20};
+        Rectangle SecondPlatform = {windowDimensions[0]/2 - 580, windowDimensions[1] - 220, 125, 20};
+        Rectangle ThirdPlatform = {windowDimensions[0]/2 - 150, windowDimensions[1] - 290, 125, 20};
+        Rectangle FouthPlatform = {windowDimensions[0]/2 - 200, windowDimensions[1] - 350, 125, 20};
+        Rectangle FivethPlatform = {windowDimensions[0]/2 - 250, windowDimensions[1] - 400, 125, 20};
+        Rectangle SixthPlatform = {windowDimensions[0]/2 - 300, windowDimensions[1] - 450, 125, 20};
+        Rectangle SeventhPlatform = {windowDimensions[0]/2 - 350, windowDimensions[1] - 500, 125, 20};
+        Rectangle OctavePlatform = {windowDimensions[0]/2 - 400, windowDimensions[1] - 550, 125, 20};
         
         
         for(int i = 0; i < MAX_SHOTS; i++){
@@ -204,16 +209,16 @@ int windowDimensions[2];
         if(!isOnGround(playerData, windowDimensions[1])){
             playerData.pos.y += gravity;
         };
-        if(CheckCollisionRecs(foot, BluePlatform)){
+        if(CheckCollisionRecs(foot, FirstPlatform)){
             
-            playerData.pos.y = windowDimensions[1] - BluePlatform.height - playerData.rec.height - 1;
+            playerData.pos.y = windowDimensions[1] - FirstPlatform.height - playerData.rec.height - 1;
             acceleration = 0;
             gravity = 0; 
 
         }
-        if(CheckCollisionRecs(foot, YellowPlatform)){
+        if(CheckCollisionRecs(foot, SecondPlatform)){
             
-            playerData.pos.y = YellowPlatform.y - playerData.rec.height - 1;
+            playerData.pos.y = SecondPlatform.y - playerData.rec.height - 1;
             acceleration = 0;
             gravity = 0;
         }
@@ -255,7 +260,9 @@ int windowDimensions[2];
             shoot_right = 0;
             playerData.pos.x -= 10;
         }
-        if(IsKeyDown(KEY_W) && ((isOnGround(playerData, windowDimensions[1]) || CheckCollisionRecs(foot, YellowPlatform) || CheckCollisionRecs(foot, BluePlatform) || CheckCollisionRecs(foot, ThirdPlatform)))){
+        if(IsKeyDown(KEY_W) && ((isOnGround(playerData, windowDimensions[1]) || CheckCollisionRecs(foot, SecondPlatform) || CheckCollisionRecs(foot, FirstPlatform) || CheckCollisionRecs(foot, ThirdPlatform) 
+            || CheckCollisionRecs(foot, FouthPlatform) || CheckCollisionRecs(foot, FivethPlatform) || CheckCollisionRecs(foot, SixthPlatform) || CheckCollisionRecs(foot, SeventhPlatform)    
+        ))){
             gravity -= 30;
             playerData.pos.y -= 1;
 
@@ -272,11 +279,13 @@ int windowDimensions[2];
 
                 playerData.rec.x = 8*(float)playerData.rec.width;
             }
-        }else if (IsKeyDown(KEY_W) && (!isOnGround(playerData, windowDimensions[1]) || !CheckCollisionRecs(foot, YellowPlatform) || !CheckCollisionRecs(foot, BluePlatform) || !CheckCollisionRecs(foot, ThirdPlatform)) && gravity >= 1)
+        }else if (IsKeyDown(KEY_W) && (!isOnGround(playerData, windowDimensions[1]) || !CheckCollisionRecs(foot, SecondPlatform) || !CheckCollisionRecs(foot, FirstPlatform) || !CheckCollisionRecs(foot, ThirdPlatform))  
+            || CheckCollisionRecs(foot, FouthPlatform) || CheckCollisionRecs(foot, FivethPlatform) || CheckCollisionRecs(foot, SixthPlatform) || CheckCollisionRecs(foot, SeventhPlatform) && gravity >= 1)
         {
             acceleration = 0.18;
         }else{
-            if(!isOnGround(playerData, windowDimensions[1]) && !CheckCollisionRecs(foot, YellowPlatform) && !CheckCollisionRecs(foot, BluePlatform) && !CheckCollisionRecs(foot, ThirdPlatform))
+            if(!isOnGround(playerData, windowDimensions[1]) && !CheckCollisionRecs(foot, SecondPlatform) && !CheckCollisionRecs(foot, FirstPlatform) && !CheckCollisionRecs(foot, ThirdPlatform)  
+            && !CheckCollisionRecs(foot, FouthPlatform) && !CheckCollisionRecs(foot, FivethPlatform) && !CheckCollisionRecs(foot, SixthPlatform) && !CheckCollisionRecs(foot, SeventhPlatform))
             acceleration = 1.5;
         }
         if(isOnGround(playerData, windowDimensions[1]) && !IsKeyDown(KEY_D) && !IsKeyDown(KEY_A)){
@@ -396,9 +405,13 @@ int windowDimensions[2];
             WHITE);            
 
 
-        DrawRectangle(BluePlatform.x, BluePlatform.y, BluePlatform.width, BluePlatform.height, BLUE);
-        DrawRectangle(YellowPlatform.x, YellowPlatform.y, YellowPlatform.width, YellowPlatform.height, YELLOW);
+        DrawRectangle(FirstPlatform.x, FirstPlatform.y, FirstPlatform.width, FirstPlatform.height, BLUE);
+        DrawRectangle(SecondPlatform.x, SecondPlatform.y, SecondPlatform.width, SecondPlatform.height, YELLOW);
         DrawRectangle(ThirdPlatform.x, ThirdPlatform.y, ThirdPlatform.width, ThirdPlatform.height, PURPLE);
+        DrawRectangle(FouthPlatform.x, FouthPlatform.y, FouthPlatform.width, FouthPlatform.height, BLACK);
+        DrawRectangle(FivethPlatform.x, FivethPlatform.y, FivethPlatform.width, FivethPlatform.height, BLACK);
+        DrawRectangle(SixthPlatform.x, SixthPlatform.y, SixthPlatform.width, SixthPlatform.height, BLACK);
+        DrawRectangle(SeventhPlatform.x, SeventhPlatform.y, SeventhPlatform.width, SeventhPlatform.height, BLACK);
 
         EndDrawing();
     }
