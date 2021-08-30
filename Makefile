@@ -24,10 +24,10 @@
 .PHONY: all clean
 
 # Define required raylib variables
-PROJECT_NAME       ?= A_Code_Adventure
+PROJECT_NAME       ?= game
 RAYLIB_VERSION     ?= 3.8.0
 ## @TODO: Mude aqui para o caminho de onde está o raylib
-RAYLIB_PATH        ?= C:\Users\nicol\OneDrive\Documentos\Raylib
+RAYLIB_PATH        ?= C:\raylib
 
 # Define compiler path on Windows
 COMPILER_PATH      ?= C:/raylib/mingw/bin

@@ -1,5 +1,8 @@
 #include "raylib.h"
 
+#define MAX_SHOTS 5 
+#define MAX_SHOTS_LEFT 5 
+
 // Game screens
 typedef enum{
     MENU,
@@ -9,11 +12,240 @@ typedef enum{
     QUIT,
 }screen;
 
+
+/* typedef struct{
+    Vector2 speed; 
+    bool active;
+    Color color;
+    Vector2 position;
+    int lifespawn;
+    float radius;
+}shoot; */
+
+typedef struct 
+{
+    Rectangle rec;
+    Vector2 pos;
+    int frame;
+    float updateTime;
+    float runningTime;
+}AnimData;
+
+bool isOnGround(AnimData data, int windowHeight)
+{
+    return data.pos.y >= windowHeight - data.rec.height;
+}
+
+// atirando para a direita 
+typedef struct{
+    Vector2 speed; 
+    bool active;
+    Color color;
+    Vector2 position;
+    int lifespawn;
+    float radius;
+}shoot;
+
+// atirando para a esquerda
+typedef struct{
+    Vector2 speed_left; 
+    bool active_left;
+    Color color_left;
+    Vector2 position_left;
+    int lifespawn_left;
+    float radius_left;
+}shoot_left;
+
+typedef struct{
+    Rectangle rec;
+}level_rec;
+
 // Define functions
 int menu(int width, int height);
 int gameplay(int width, int height);
 int pause(int width, int height);
 int death(int width, int height);
+
+// Gameplay work flow
+int gameplay(int width, int height){
+int windowDimensions[2];
+    windowDimensions[0] = width; // x
+    windowDimensions[1] = height; // y
+
+    // acceleration due to gravity (pixels/s)/s
+    float gravity = 0;
+    float acceleration = 1.5;
+    
+    // num tiros
+    shoot Shoot[MAX_SHOTS] = {0};
+    shoot_left Shoot_left[MAX_SHOTS_LEFT] = {0};
+    
+    // direção projétil
+    // bool shoot_right; // se 1, indo p/ direita, se 0, indo para a esquerda
+
+    // Player Animation
+    Texture2D  player = LoadTexture("./Sprites/player_sheet.png");
+    float frameWidth = (float)(player.width/19);  
+    float timer = 0.0f;
+    // player variables
+    AnimData scarfyData;
+    scarfyData.rec.width = frameWidth;
+    scarfyData.rec.height = (float)player.height;
+    scarfyData.rec.x = 1;
+    scarfyData.rec.y = 1;
+    scarfyData.pos.x = windowDimensions[0]/2 - scarfyData.rec.width/2;
+    scarfyData.pos.y = windowDimensions[1] - scarfyData.rec.height;
+    scarfyData.frame = 0;
+    scarfyData.updateTime = 1.0/12.0;
+    scarfyData.runningTime = 0.0;
+
+    for(int i = 0; i < MAX_SHOTS; i++){ // no sé que se passa
+            Shoot[i].position = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
+            Shoot[i].speed.x = 3;
+            Shoot[i].radius = 10;
+            Shoot[i].active = false;
+            Shoot[i].color = BLUE;
+            Shoot[i].lifespawn = 0;
+    }
+
+    for(int i = 0; i < MAX_SHOTS_LEFT; i++){ // no sé que se passa esquérdita
+            Shoot_left[i].position_left = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
+            Shoot_left[i].speed_left.x = 3;
+            Shoot_left[i].radius_left = 10;
+            Shoot_left[i].active_left = false;
+            Shoot_left[i].color_left = BLUE;
+            Shoot_left[i].lifespawn_left = 0;
+    }
+    /* for(int i = 0; i < MAX_SHOTS; i++){
+        shoot Shoot[i];
+        
+    } */
+    int shoot_right = 0;
+
+    
+    while (!WindowShouldClose())
+    {
+        // start drawing
+        BeginDrawing();
+        ClearBackground(WHITE);
+        DrawTextureRec(
+            player,
+            scarfyData.rec,
+            scarfyData.pos,
+            RAYWHITE);
+        // gravidade
+        for(int i = 0; i < MAX_SHOTS; i++){
+        }
+        if(!isOnGround(scarfyData, windowDimensions[1])){
+            scarfyData.pos.y += gravity;
+        };
+
+        // controles basicos 
+        if (IsKeyDown(KEY_D))
+        {
+            shoot_right = 1;
+            scarfyData.pos.x += 10;
+        }
+        if (IsKeyDown(KEY_A))
+        {
+            shoot_right = 0;
+            scarfyData.pos.x -= 10;
+        }
+        if(IsKeyDown(KEY_W) && isOnGround(scarfyData, windowDimensions[1])){
+            gravity -= 30;
+            scarfyData.pos.y -= 1;
+
+        }else if (IsKeyDown(KEY_W) && !isOnGround(scarfyData, windowDimensions[1]) && gravity >= 1)
+        {
+            acceleration = 0.18;
+        }
+
+        }
+        if(isOnGround(scarfyData, windowDimensions[1])){
+            scarfyData.pos.y = windowDimensions[1] - scarfyData.rec.height;
+            gravity = 1;   
+        } 
+        gravity += acceleration;
+
+        // Tiro do player
+
+        
+        if (IsKeyPressed(KEY_SPACE) && shoot_right == 1)
+        {
+             for(int i = 0; i < MAX_SHOTS; i++){
+                 if(!Shoot[i].active){
+                     Shoot[i].position = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
+                     Shoot[i].active = true;
+                     break;
+                 }
+             }
+        }
+
+        for(int i = 0; i < MAX_SHOTS; i++){
+            if(Shoot[i].active){
+                Shoot[i].position.x += 12;
+                Shoot[i].lifespawn++;
+                if(Shoot[i].position.x >= windowDimensions[0] + Shoot[i].radius){
+                    Shoot[i].active = false;
+                }
+                if(Shoot[i].active){
+                    DrawCircleV(Shoot[i].position, Shoot[i].radius, BLUE);
+                }
+                if(Shoot[i].lifespawn >= 800){
+                    Shoot[i].position = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
+                    Shoot[i].speed = (Vector2){0, 0};
+                    Shoot[i].lifespawn = 0;
+                    Shoot[i].active = false;
+                }
+            }
+        }
+        if (IsKeyPressed(KEY_SPACE) && shoot_right == 0)
+        {
+             for(int i = 0; i < MAX_SHOTS_LEFT; i++){
+                 if(!Shoot_left[i].active_left){
+                     Shoot_left[i].position_left = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
+                     Shoot_left[i].active_left = true;
+                     break;
+                 }
+             }
+        }
+        
+        for(int i = 0; i < MAX_SHOTS_LEFT; i++){  
+            if(Shoot_left[i].active_left){
+                Shoot_left[i].position_left.x -= 12;
+                Shoot_left[i].lifespawn_left++;
+                if(Shoot_left[i].position_left.x <= 0 - Shoot[i].radius){
+                    Shoot_left[i].active_left = false;
+                }
+                if(Shoot_left[i].active_left){
+                    DrawCircleV(Shoot_left[i].position_left, Shoot_left[i].radius_left, BLUE);
+                }
+                if(Shoot_left[i].lifespawn_left >= 800){
+                    Shoot_left[i].position_left = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
+                    Shoot_left[i].speed_left = (Vector2){0, 0};
+                    Shoot_left[i].lifespawn_left = 0;
+                    Shoot_left[i].active_left = false;
+                }
+            }
+
+            // logica de colisões retangulos level design
+            // primeiro rectangle teste
+            level_rec primeiro;
+            primeiro.rec.x = windowDimensions[0]/2 - primeiro.rec.x/2;
+            primeiro.rec.y = windowDimensions[1] - primeiro.rec.height;  
+            primeiro.rec.width = 150;
+            primeiro.rec.height = 30;
+            DrawRectangle(primeiro.rec.x, primeiro.rec.y, primeiro.rec.width, primeiro.rec.height, GREEN);
+            /* if(CheckCollisionRecs(primeiro.rec, scarfyData.rec)){
+                
+            } */
+
+        }
+
+        // stop drawing
+        EndDrawing();
+    }
+
 
 // Pause menu
 int pause(int width, int height){
@@ -175,102 +407,6 @@ int death(int width, int height){
     UnloadSound(menu_confirm_audio);
     UnloadSound(menu_return_audio);
     CloseAudioDevice();
-}
-
-// Gameplay work flow
-int gameplay(int width, int height){
-
-    // Circle
-    int circle_x = width/3;
-    int circle_y = height/3;
-    int circle_radius = 25;
-
-    // Circle edges
-    int l_circle_x = circle_x - circle_radius;
-    int r_circle_x = circle_x + circle_radius;
-    int u_circle_y = circle_y - circle_radius;
-    int b_circle_y = circle_y + circle_radius;
-
-    // Axe coordinates
-    int axe_x = 300;
-    int axe_y = 0;
-    int axe_length = 50;
-
-    int direction = 10;
-
-    // Axe edges
-    int l_axe_x = axe_x;
-    int r_axe_x = axe_x + axe_length;
-    int u_axe_y = axe_y;
-    int b_axe_y = axe_y + axe_length;
-
-    bool collision_with_axe =
-        (b_axe_y >= u_circle_y) &&
-        (u_axe_y <= b_circle_y) &&
-        (l_axe_x <= r_circle_x) &&
-        (r_axe_x >= l_circle_x);
-
-    while(!WindowShouldClose()){
-
-        // Pause menu
-        int pausemenu_option = 1;
-        if(IsKeyReleased(KEY_BACKSPACE)){
-            pausemenu_option = pause(width, height);
-            if(pausemenu_option==RESUME);
-            else if(pausemenu_option==MENU) return MENU;
-            else if(pausemenu_option==QUIT) return QUIT;
-        }
-
-        BeginDrawing();
-        ClearBackground(WHITE);
-
-        if(collision_with_axe) return DEATH;
-
-        else{
-
-            // Update edges
-            l_circle_x = circle_x - circle_radius;
-            r_circle_x = circle_x + circle_radius;
-            u_circle_y = circle_y - circle_radius;
-            b_circle_y = circle_y + circle_radius;
-
-            l_axe_x = axe_x;
-            r_axe_x = axe_x + axe_length;
-            u_axe_y = axe_y;
-            b_axe_y = axe_y + axe_length;
-
-            // Update collision
-            collision_with_axe =
-                (b_axe_y >= u_circle_y) &&
-                (u_axe_y <= b_circle_y) &&
-                (l_axe_x <= r_circle_x) &&
-                (r_axe_x >= l_circle_x);
-            
-            // Game work flow
-            DrawCircle(circle_x, circle_y, circle_radius, BLUE);
-            DrawRectangle(axe_x, axe_y, axe_length, axe_length, RED);
-
-            axe_y += direction;
-            if( axe_y > height || axe_y < 0){
-                direction = -direction;
-            }
-
-            if(IsKeyDown(KEY_D) && circle_x < width){
-                circle_x += 10;
-            }
-            if(IsKeyDown(KEY_A) && circle_x > 0){
-                circle_x -= 10;
-            }
-            if(IsKeyDown(KEY_W)){
-                circle_y -= 10;
-            }
-            if(IsKeyDown(KEY_S)){
-                circle_y += 10;
-            }
-        }
-        
-        EndDrawing();
-    }
 }
 
 // Game menu
