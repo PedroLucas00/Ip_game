@@ -136,6 +136,7 @@ int gameplay(int width, int height){
         // PLATFORM RECTANGLES
         Rectangle BluePlatform = {windowDimensions[0]/2 - 25, windowDimensions[1] - 50, 50, 50};
         Rectangle YellowPlatform = {windowDimensions[0]/2 + 120, windowDimensions[1] - 220, 125, 50};
+        Rectangle ThirdPlatform = {windowDimensions[0]/2 - 150, windowDimensions[1] - 290, 125, 50};
         
         
         for(int i = 0; i < MAX_SHOTS; i++){
@@ -168,15 +169,15 @@ int gameplay(int width, int height){
             shoot_right = 0;
             scarfyData.pos.x -= 10;
         }
-        if(IsKeyDown(KEY_W) && ((isOnGround(scarfyData, windowDimensions[1]) || CheckCollisionRecs(foot, YellowPlatform) || CheckCollisionRecs(foot, BluePlatform)))){
+        if(IsKeyDown(KEY_W) && ((isOnGround(scarfyData, windowDimensions[1]) || CheckCollisionRecs(foot, YellowPlatform) || CheckCollisionRecs(foot, BluePlatform) || CheckCollisionRecs(foot, ThirdPlatform)))){
             gravity -= 30;
             scarfyData.pos.y -= 1;
 
-        }else if (IsKeyDown(KEY_W) && (!isOnGround(scarfyData, windowDimensions[1]) || !CheckCollisionRecs(foot, YellowPlatform) || !CheckCollisionRecs(foot, BluePlatform)) && gravity >= 1)
+        }else if (IsKeyDown(KEY_W) && (!isOnGround(scarfyData, windowDimensions[1]) || !CheckCollisionRecs(foot, YellowPlatform) || !CheckCollisionRecs(foot, BluePlatform) || !CheckCollisionRecs(foot, ThirdPlatform)) && gravity >= 1)
         {
             acceleration = 0.18;
         }else{
-            if(!isOnGround(scarfyData, windowDimensions[1]) && !CheckCollisionRecs(foot, YellowPlatform) && !CheckCollisionRecs(foot, BluePlatform))
+            if(!isOnGround(scarfyData, windowDimensions[1]) && !CheckCollisionRecs(foot, YellowPlatform) && !CheckCollisionRecs(foot, BluePlatform) && !CheckCollisionRecs(foot, ThirdPlatform))
             acceleration = 1.5;
         }
         if(isOnGround(scarfyData, windowDimensions[1])){
@@ -254,6 +255,8 @@ int gameplay(int width, int height){
 
         DrawRectangle(BluePlatform.x, BluePlatform.y, BluePlatform.width, BluePlatform.height, RED);
         DrawRectangle(YellowPlatform.x, YellowPlatform.y, YellowPlatform.width, YellowPlatform.height, YELLOW);
+        DrawRectangle(ThirdPlatform.x, ThirdPlatform.y, ThirdPlatform.width, ThirdPlatform.height, PURPLE);
+
         EndDrawing();
     }
 }
