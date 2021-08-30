@@ -157,9 +157,8 @@ int windowDimensions[2];
         }else if (IsKeyDown(KEY_W) && !isOnGround(scarfyData, windowDimensions[1]) && gravity >= 1)
         {
             acceleration = 0.18;
-        }else{
-            if(!isOnGround(scarfyData, windowDimensions[1]))
-            acceleration = 1.5;
+        }
+
         }
         if(isOnGround(scarfyData, windowDimensions[1])){
             scarfyData.pos.y = windowDimensions[1] - scarfyData.rec.height;
@@ -245,7 +244,7 @@ int windowDimensions[2];
         // stop drawing
         EndDrawing();
     }
-}
+
 
 // Pause menu
 int pause(int width, int height){
