@@ -199,6 +199,7 @@ int windowDimensions[2];
         Rectangle ThirdPlatform = {windowDimensions[0]/2 - 150, windowDimensions[1] - 290, 125, 50};
         
         
+        
         for(int i = 0; i < MAX_SHOTS; i++){
         }
         if(!isOnGround(playerData, windowDimensions[1])){
@@ -216,6 +217,13 @@ int windowDimensions[2];
             playerData.pos.y = YellowPlatform.y - playerData.rec.height - 1;
             acceleration = 0;
             gravity = 0;
+        }
+        if(CheckCollisionRecs(foot, ThirdPlatform)){
+            
+            playerData.pos.y = ThirdPlatform.y - playerData.rec.height - 1;
+            acceleration = 0;
+            gravity = 0; 
+
         }
 
         // controles basicos 
