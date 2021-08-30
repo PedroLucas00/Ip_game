@@ -20,7 +20,7 @@ int pause(int width, int height){
     // Pause Menu Variables
     int selected_pausemenu_option = 1;
     // Pause Menu Options Positions
-    Vector2 RESUME_position = {566, 268}, GO_TO_MENU_position = {522, 339}, QUIT_position = {600, 411};
+    Vector2 RESUME_position = {563, 244}, GO_TO_MENU_position = {519, 315}, QUIT_position = {594, 387};
     // Define text font size
     int TEXT_fontsize = 60;
     // Starting audio device
@@ -51,7 +51,7 @@ int pause(int width, int height){
         if(IsKeyReleased(KEY_DOWN)) selected_pausemenu_option++;
         // Menu Drawing
         BeginDrawing();
-        DrawTexture(pause_background, 416, 218, WHITE);
+        DrawTexture(pause_background, 415, 205, WHITE);
         if(selected_pausemenu_option==1){
             DrawTextEx(pausemenu_font, "RESUME", RESUME_position, TEXT_fontsize, 5, RED);
             DrawTextEx(pausemenu_font, "GO TO MENU", GO_TO_MENU_position, TEXT_fontsize, 5, WHITE);
@@ -99,7 +99,7 @@ int death(int width, int height){
     // Death Menu Variables
     int selected_deathmenu_option = 1;
     // Death Menu Options Positions
-    Vector2 TRY_AGAIN_position = {188, 372}, GO_TO_MENU_position = {153, 442}, QUIT_position = {303, 581}, GAMEOVER_position = {width-(width/3)-(width/120), height-(height/6)};
+    Vector2 TRY_AGAIN_position = {188, 372}, GO_TO_MENU_position = {153, 442}, QUIT_position = {303, 581}, GAMEOVER_position = {width-(width/3)-(width/120)-3, height-(height/6)};
     // Define GAMEOVER font size
     int GAMEOVER_fontsize = 120;
     // Define text font size
