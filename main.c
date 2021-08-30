@@ -86,6 +86,7 @@ int windowDimensions[2];
     // Player Animation
     Texture2D  player = LoadTexture("./Sprites/player_sheet.png");
     float frameWidth = (float)(player.width/19);  
+    float timer = 0.0f;
     // player variables
     AnimData scarfyData;
     scarfyData.rec.width = frameWidth;
