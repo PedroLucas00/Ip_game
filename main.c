@@ -67,6 +67,8 @@ typedef struct{
     Rectangle rec;
 }level_rec;
 
+
+
 // Define functions
 int menu(int width, int height);
 int gameplay(int width, int height, AnimData data, Texture2D player, int framesSpeed, int framesCounter);
@@ -76,6 +78,7 @@ int death(int width, int height);
 // Gameplay work flow
 int gameplay(int width, int height, AnimData data, Texture2D player, int framesSpeed, int framesCounter){
 int windowDimensions[2];
+
     windowDimensions[0] = width; // x
     windowDimensions[1] = height; // y
 
@@ -95,6 +98,8 @@ int windowDimensions[2];
     // bool shoot_right; // se 1, indo p/ direita, se 0, indo para a esquerda
 
     // Player Animation
+    level_rec prim;
+>>>>>>> acd79c28524071d6fced198e3cf3a8411c526d13
 
     for(int i = 0; i < MAX_SHOTS; i++){ // no sé que se passa
             Shoot[i].position = (Vector2){data.pos.x + 30, data.pos.y + 30};
@@ -119,17 +124,41 @@ int windowDimensions[2];
     } */
     int shoot_right = 0;
     
+    
+    //Rectangle floor = (FloorX, FloorY, FloorW, FloorH);
+
+
     while (!WindowShouldClose())
     {
         // Frame counter for animation incrementation
         framesCounter++;
 
         // gravidade
+        Rectangle foot = {scarfyData.pos.x, scarfyData.pos.y, scarfyData.rec.width, scarfyData.rec.height};
+
+        // PLATFORM RECTANGLES
+        Rectangle BluePlatform = {windowDimensions[0]/2 - 25, windowDimensions[1] - 50, 50, 50};
+        Rectangle YellowPlatform = {windowDimensions[0]/2 + 120, windowDimensions[1] - 220, 125, 50};
+        
+        
         for(int i = 0; i < MAX_SHOTS; i++){
         }
         if(!isOnGround(data, windowDimensions[1])){
             data.pos.y += gravity;
         };
+        if(CheckCollisionRecs(foot, BluePlatform)){
+            
+            scarfyData.pos.y = windowDimensions[1] - BluePlatform.height - scarfyData.rec.height - 1;
+            acceleration = 0;
+            gravity = 0; 
+
+        }
+        if(CheckCollisionRecs(foot, YellowPlatform)){
+            
+            scarfyData.pos.y = YellowPlatform.y - scarfyData.rec.height - 1;
+            acceleration = 0;
+            gravity = 0;
+        }
 
         // controles basicos 
         if (IsKeyDown(KEY_D))
@@ -168,7 +197,8 @@ int windowDimensions[2];
             shoot_right = 0;
             data.pos.x -= 10;
         }
-        if(IsKeyDown(KEY_W) && isOnGround(data, windowDimensions[1])){
+        if(IsKeyDown(KEY_W) && ((isOnGround(data, windowDimensions[1]) || CheckCollisionRecs(foot, YellowPlatform) || CheckCollisionRecs(foot, BluePlatform)))){
+
             gravity -= 30;
             data.pos.y -= 1;
 
@@ -185,11 +215,11 @@ int windowDimensions[2];
 
                 data.rec.x = 8*(float)data.rec.width;
             }
-        }else if (IsKeyDown(KEY_W) && !isOnGround(data, windowDimensions[1]) && gravity >= 1)
+        }else if (IsKeyDown(KEY_W) && (!isOnGround(data, windowDimensions[1]) || !CheckCollisionRecs(foot, YellowPlatform) || !CheckCollisionRecs(foot, BluePlatform)) && gravity >= 1)
         {
             acceleration = 0.18;
         }else{
-            if(!isOnGround(data, windowDimensions[1]))
+            if(!isOnGround(data, windowDimensions[1]) && !CheckCollisionRecs(foot, YellowPlatform) && !CheckCollisionRecs(foot, BluePlatform))
             acceleration = 1.5;
         }
         if(isOnGround(data, windowDimensions[1]) && !IsKeyDown(KEY_D) && !IsKeyDown(KEY_A)){
@@ -213,8 +243,6 @@ int windowDimensions[2];
         gravity += acceleration;
 
         // Tiro do player
-
-        
         if (IsKeyPressed(KEY_SPACE) && shoot_right == 1)
         {
              for(int i = 0; i < MAX_SHOTS; i++){
@@ -274,15 +302,22 @@ int windowDimensions[2];
             }
         }
 
-
-        BeginDrawing();
+        /* bool platformCollision = CheckCollisionRecs(foot, BluePlatform);
+        bool onFloor = CheckCollisionRecs(foot, floor);  */        
+        /* if(onFloor){
+            data.pos.y = windowDimensions[1] + data.rec.y;
+        } */
+         BeginDrawing();
         ClearBackground(WHITE);
         DrawTextureRec(
             player,
             data.rec,
             data.pos,
-            WHITE);
-        
+            WHITE);      
+
+
+        DrawRectangle(BluePlatform.x, BluePlatform.y, BluePlatform.width, BluePlatform.height, RED);
+        DrawRectangle(YellowPlatform.x, YellowPlatform.y, YellowPlatform.width, YellowPlatform.height, YELLOW);
         EndDrawing();
     }
 }
