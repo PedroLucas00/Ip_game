@@ -51,6 +51,8 @@ typedef struct{
     Rectangle rec;
 }level_rec;
 
+
+
 // Define functions
 int menu(int width, int height);
 int gameplay(int width, int height);
@@ -59,7 +61,7 @@ int death(int width, int height);
 
 // Gameplay work flow
 int gameplay(int width, int height){
-int windowDimensions[2];
+    int windowDimensions[2];
     windowDimensions[0] = width; // x
     windowDimensions[1] = height; // y
 
@@ -89,6 +91,7 @@ int windowDimensions[2];
     scarfyData.frame = 0;
     scarfyData.updateTime = 1.0/12.0;
     scarfyData.runningTime = 0.0;
+    level_rec prim;
 
     for(int i = 0; i < MAX_SHOTS; i++){ // no sé que se passa
             Shoot[i].position = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
@@ -113,6 +116,10 @@ int windowDimensions[2];
     } */
     int shoot_right = 0;
     
+    
+    //Rectangle floor = (FloorX, FloorY, FloorW, FloorH);
+
+
     while (!WindowShouldClose())
     {
         // start drawing
@@ -124,6 +131,10 @@ int windowDimensions[2];
             scarfyData.pos,
             RAYWHITE);
         // gravidade
+        //bool collision_player_platform = GetCollisionRec(scarfyData.rec, prim.rec);
+        Rectangle BluePlatform = {windowDimensions[0]/2 - 25, windowDimensions[1] - 50, 50, 50};
+        
+        
         for(int i = 0; i < MAX_SHOTS; i++){
         }
         if(!isOnGround(scarfyData, windowDimensions[1])){
@@ -159,8 +170,6 @@ int windowDimensions[2];
         gravity += acceleration;
 
         // Tiro do player
-
-        
         if (IsKeyPressed(KEY_SPACE) && shoot_right == 1)
         {
              for(int i = 0; i < MAX_SHOTS; i++){
@@ -219,7 +228,19 @@ int windowDimensions[2];
                 }
             }
         }
-        
+        Rectangle foot = {scarfyData.pos.x, scarfyData.pos.y, scarfyData.rec.width, scarfyData.rec.height};
+        /* bool platformCollision = CheckCollisionRecs(foot, BluePlatform);
+        bool onFloor = CheckCollisionRecs(foot, floor);  */        
+        /* if(onFloor){
+            scarfyData.pos.y = windowDimensions[1] + scarfyData.rec.y;
+        } */
+        if(CheckCollisionRecs(foot, BluePlatform)){
+            gravity = 0;
+            scarfyData.pos.y = windowDimensions[1] - BluePlatform.height - scarfyData.rec.height;
+        }
+
+        DrawRectangle(BluePlatform.x, BluePlatform.y, BluePlatform.width, BluePlatform.height, RED);
+        DrawRectangle(50, 50, 50, 50, YELLOW);
         EndDrawing();
     }
 }
