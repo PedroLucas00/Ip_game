@@ -27,6 +27,22 @@ bool isOnGround(AnimData data, int windowHeight)
     return data.pos.y >= windowHeight - data.rec.height;
 }
 
+// Running animation reference
+/*animate(AnimData data, int initAnim, int endAnim,int currentFrame, int framesSpeed, int framesCounter) {
+    
+
+        if (framesCounter >= (60/framesSpeed))
+        {
+            framesCounter = 0;
+            currentFrame++;
+
+            if (currentFrame > endAnim || currentFrame < initAnim) currentFrame = initAnim;
+
+            data.rec.x = (float)currentFrame*(float)data.rec.width;
+
+        }
+}*/
+
 // atirando para a direita 
 typedef struct{
     Vector2 speed; 
@@ -53,15 +69,19 @@ typedef struct{
 
 // Define functions
 int menu(int width, int height);
-int gameplay(int width, int height);
+int gameplay(int width, int height, AnimData data, Texture2D player, int framesSpeed, int framesCounter);
 int pause(int width, int height);
 int death(int width, int height);
 
 // Gameplay work flow
-int gameplay(int width, int height){
+int gameplay(int width, int height, AnimData data, Texture2D player, int framesSpeed, int framesCounter){
 int windowDimensions[2];
     windowDimensions[0] = width; // x
     windowDimensions[1] = height; // y
+
+     // variables to choose between animations intended
+     int initAnim, endAnim;
+     int currentFrame = 0;
 
     // acceleration due to gravity (pixels/s)/s
     float gravity = 0;
@@ -75,23 +95,9 @@ int windowDimensions[2];
     // bool shoot_right; // se 1, indo p/ direita, se 0, indo para a esquerda
 
     // Player Animation
-    Texture2D  player = LoadTexture("./Sprites/player_sheet.png");
-    float frameWidth = (float)(player.width/19);  
-    float timer = 0.0f;
-    // player variables
-    AnimData scarfyData;
-    scarfyData.rec.width = frameWidth;
-    scarfyData.rec.height = (float)player.height;
-    scarfyData.rec.x = 1;
-    scarfyData.rec.y = 1;
-    scarfyData.pos.x = windowDimensions[0]/2 - scarfyData.rec.width/2;
-    scarfyData.pos.y = windowDimensions[1] - scarfyData.rec.height;
-    scarfyData.frame = 0;
-    scarfyData.updateTime = 1.0/12.0;
-    scarfyData.runningTime = 0.0;
 
     for(int i = 0; i < MAX_SHOTS; i++){ // no sé que se passa
-            Shoot[i].position = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
+            Shoot[i].position = (Vector2){data.pos.x + 30, data.pos.y + 30};
             Shoot[i].speed.x = 3;
             Shoot[i].radius = 10;
             Shoot[i].active = false;
@@ -100,7 +106,7 @@ int windowDimensions[2];
     }
 
     for(int i = 0; i < MAX_SHOTS_LEFT; i++){ // no sé que se passa esquérdita
-            Shoot_left[i].position_left = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
+            Shoot_left[i].position_left = (Vector2){data.pos.x + 30, data.pos.y + 30};
             Shoot_left[i].speed_left.x = 3;
             Shoot_left[i].radius_left = 10;
             Shoot_left[i].active_left = false;
@@ -115,46 +121,94 @@ int windowDimensions[2];
     
     while (!WindowShouldClose())
     {
-        // start drawing
-        BeginDrawing();
-        ClearBackground(WHITE);
-        DrawTextureRec(
-            player,
-            scarfyData.rec,
-            scarfyData.pos,
-            RAYWHITE);
+        // Frame counter for animation incrementation
+        framesCounter++;
+
         // gravidade
         for(int i = 0; i < MAX_SHOTS; i++){
         }
-        if(!isOnGround(scarfyData, windowDimensions[1])){
-            scarfyData.pos.y += gravity;
+        if(!isOnGround(data, windowDimensions[1])){
+            data.pos.y += gravity;
         };
 
         // controles basicos 
         if (IsKeyDown(KEY_D))
         {
+            initAnim = 0;
+            endAnim = 4;
             shoot_right = 1;
-            scarfyData.pos.x += 10;
+            data.pos.x += 10;
+            
+            if (framesCounter >= (60/framesSpeed))
+        {
+                framesCounter = 0;
+                currentFrame++;
+
+                 if (currentFrame > endAnim || currentFrame < initAnim) currentFrame = initAnim;
+
+                data.rec.x = (float)currentFrame*(float)data.rec.width;
         }
+        }
+
         if (IsKeyDown(KEY_A))
         {
-            shoot_right = 0;
-            scarfyData.pos.x -= 10;
-        }
-        if(IsKeyDown(KEY_W) && isOnGround(scarfyData, windowDimensions[1])){
-            gravity -= 30;
-            scarfyData.pos.y -= 1;
+            initAnim = 11;
+            endAnim = 15;
 
-        }else if (IsKeyDown(KEY_W) && !isOnGround(scarfyData, windowDimensions[1]) && gravity >= 1)
+            if (framesCounter >= (60/framesSpeed))
+        {
+                framesCounter = 0;
+                currentFrame++;
+
+                if (currentFrame > endAnim || currentFrame < initAnim) currentFrame = initAnim;
+
+                data.rec.x = (float)currentFrame*(float)data.rec.width;
+        }
+
+            shoot_right = 0;
+            data.pos.x -= 10;
+        }
+        if(IsKeyDown(KEY_W) && isOnGround(data, windowDimensions[1])){
+            gravity -= 30;
+            data.pos.y -= 1;
+
+            if(shoot_right){
+                initAnim = 6;
+                endAnim = 6;
+
+                data.rec.x = 6*(float)data.rec.width;
+            }
+
+            if(!shoot_right){
+                initAnim = 8;
+                endAnim = 8;
+
+                data.rec.x = 8*(float)data.rec.width;
+            }
+        }else if (IsKeyDown(KEY_W) && !isOnGround(data, windowDimensions[1]) && gravity >= 1)
         {
             acceleration = 0.18;
         }else{
-            if(!isOnGround(scarfyData, windowDimensions[1]))
+            if(!isOnGround(data, windowDimensions[1]))
             acceleration = 1.5;
         }
-        if(isOnGround(scarfyData, windowDimensions[1])){
-            scarfyData.pos.y = windowDimensions[1] - scarfyData.rec.height;
-            gravity = 1;   
+        if(isOnGround(data, windowDimensions[1]) && !IsKeyDown(KEY_D) && !IsKeyDown(KEY_A)){
+            data.pos.y = windowDimensions[1] - data.rec.height;
+            gravity = 1;
+
+            if (shoot_right) {
+            initAnim = 0;
+            endAnim = 0;
+
+            data.rec.x = 0*(float)data.rec.width; 
+            }
+
+            if (!shoot_right) {
+            initAnim = 11;
+            endAnim = 11;
+
+            data.rec.x = 11*(float)data.rec.width; 
+            }    
         } 
         gravity += acceleration;
 
@@ -165,7 +219,7 @@ int windowDimensions[2];
         {
              for(int i = 0; i < MAX_SHOTS; i++){
                  if(!Shoot[i].active){
-                     Shoot[i].position = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
+                     Shoot[i].position = (Vector2){data.pos.x + 30, data.pos.y + 30};
                      Shoot[i].active = true;
                      break;
                  }
@@ -183,7 +237,7 @@ int windowDimensions[2];
                     DrawCircleV(Shoot[i].position, Shoot[i].radius, BLUE);
                 }
                 if(Shoot[i].lifespawn >= 800){
-                    Shoot[i].position = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
+                    Shoot[i].position = (Vector2){data.pos.x + 30, data.pos.y + 30};
                     Shoot[i].speed = (Vector2){0, 0};
                     Shoot[i].lifespawn = 0;
                     Shoot[i].active = false;
@@ -194,7 +248,7 @@ int windowDimensions[2];
         {
              for(int i = 0; i < MAX_SHOTS_LEFT; i++){
                  if(!Shoot_left[i].active_left){
-                     Shoot_left[i].position_left = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
+                     Shoot_left[i].position_left = (Vector2){data.pos.x + 30, data.pos.y + 30};
                      Shoot_left[i].active_left = true;
                      break;
                  }
@@ -212,13 +266,22 @@ int windowDimensions[2];
                     DrawCircleV(Shoot_left[i].position_left, Shoot_left[i].radius_left, BLUE);
                 }
                 if(Shoot_left[i].lifespawn_left >= 800){
-                    Shoot_left[i].position_left = (Vector2){scarfyData.pos.x + 30, scarfyData.pos.y + 30};
+                    Shoot_left[i].position_left = (Vector2){data.pos.x + 30, data.pos.y + 30};
                     Shoot_left[i].speed_left = (Vector2){0, 0};
                     Shoot_left[i].lifespawn_left = 0;
                     Shoot_left[i].active_left = false;
                 }
             }
         }
+
+
+        BeginDrawing();
+        ClearBackground(WHITE);
+        DrawTextureRec(
+            player,
+            data.rec,
+            data.pos,
+            WHITE);
         
         EndDrawing();
     }
@@ -461,6 +524,24 @@ int main(void){
     const int width = 1280;
     const int height = 720;
     InitWindow(width, height, "A Code Adventure");
+
+    // Animation aux
+    int framesSpeed = 6;  
+    int framesCounter = 0;
+
+    // Player Animation
+    Texture2D  player = LoadTexture("./Sprites/player_sheet.png"); 
+    // player variables
+    AnimData playerData;
+    playerData.rec.width = (float)(player.width/19); 
+    playerData.rec.height = (float)player.height;
+    playerData.rec.x = 0.0f;
+    playerData.rec.y = 0.0f;
+    playerData.pos.x = width/2 - playerData.rec.width/2;
+    playerData.pos.y = height - playerData.rec.height;
+    playerData.frame = 0;
+    playerData.updateTime = 1.0/12.0;
+    playerData.runningTime = 0.0;
     
     // Game FPS
     SetTargetFPS(60);
@@ -471,7 +552,11 @@ int main(void){
     // Loop game screen change
     while(current_screen!=QUIT){
         if(current_screen==MENU) current_screen = menu(width, height);
-        else if(current_screen==GAMEPLAY) current_screen = gameplay(width, height);
+        else if(current_screen==GAMEPLAY) current_screen = gameplay(width, height,
+        playerData,
+        player,
+        framesSpeed,
+        framesCounter);
         else if(current_screen==DEATH) current_screen = death(width, height);
     }
     
