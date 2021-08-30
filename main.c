@@ -22,14 +22,15 @@ typedef struct
     float runningTime;
 }AnimData;
 
-bool isOnGround(AnimData data, int windowHeight)
+bool isOnGround(AnimData playerData, int windowHeight)
 {
-    return data.pos.y >= windowHeight - data.rec.height;
+    return playerData.pos.y >= windowHeight - playerData.rec.height;
 }
 
 // Running animation reference
-/*animate(AnimData data, int initAnim, int endAnim,int currentFrame, int framesSpeed, int framesCounter) {
-    
+/*animate(AnimData playerData, int initAnim, int endAnim,int currentFrame, int framesSpeed, int framesCounter) {
+        initAnim = 0;
+        endAnim = 4;
 
         if (framesCounter >= (60/framesSpeed))
         {
@@ -38,8 +39,7 @@ bool isOnGround(AnimData data, int windowHeight)
 
             if (currentFrame > endAnim || currentFrame < initAnim) currentFrame = initAnim;
 
-            data.rec.x = (float)currentFrame*(float)data.rec.width;
-
+            playerData.rec.x = (float)currentFrame*(float)playerData.rec.width;
         }
 }*/
 
@@ -71,12 +71,12 @@ typedef struct{
 
 // Define functions
 int menu(int width, int height);
-int gameplay(int width, int height, AnimData data, Texture2D player, int framesSpeed, int framesCounter);
+int gameplay(int width, int height, int framesSpeed, int framesCounter);
 int pause(int width, int height);
 int death(int width, int height);
 
 // Gameplay work flow
-int gameplay(int width, int height, AnimData data, Texture2D player, int framesSpeed, int framesCounter){
+int gameplay(int width, int height, int framesSpeed, int framesCounter){
 int windowDimensions[2];
 
     windowDimensions[0] = width; // x
@@ -97,11 +97,52 @@ int windowDimensions[2];
     // direção projétil
     // bool shoot_right; // se 1, indo p/ direita, se 0, indo para a esquerda
 
-    // Player Animation
+    // Player Animation and variables
+    Texture2D  player = LoadTexture("./Sprites/player_sheet.png"); 
+    
+    AnimData playerData;
+    playerData.rec.width = (float)(player.width/19); 
+    playerData.rec.height = (float)player.height;
+    playerData.rec.x = 0.0f;
+    playerData.rec.y = 0.0f;
+    playerData.pos.x = width/2 - playerData.rec.width/2;
+    playerData.pos.y = height - playerData.rec.height;
+    playerData.frame = 0;
+    playerData.updateTime = 1.0/12.0;
+    playerData.runningTime = 0.0;
+    
+    // Tiro animation and variables
+    Texture2D  tiro = LoadTexture("./Sprites/malloc_sheet_upscale.png");
+
+    AnimData tiroData;
+    tiroData.rec.width = (float)(tiro.width/2); 
+    tiroData.rec.height = (float)tiro.height;
+    tiroData.rec.x = 0.0f;
+    tiroData.rec.y = 0.0f;
+    tiroData.pos.x = width/2 - tiroData.rec.width/2;
+    tiroData.pos.y = height - tiroData.rec.height;
+    tiroData.frame = 0;
+    tiroData.updateTime = 1.0/12.0;
+    tiroData.runningTime = 0.0;
+
+    // Memory animation and variables
+    Texture2D  memory = LoadTexture("./Sprites/memory_sheet.png");
+
+    AnimData memoryData;
+    memoryData.rec.width = (float)(memory.width/7); 
+    memoryData.rec.height = (float)memory.height;
+    memoryData.rec.x = 0.0f;
+    memoryData.rec.y = 0.0f;
+    memoryData.pos.x = width/2 - memoryData.rec.width;
+    memoryData.pos.y = height;
+    memoryData.frame = 0;
+    memoryData.updateTime = 1.0/12.0;
+    memoryData.runningTime = 0.0;
+
     level_rec prim;
 
     for(int i = 0; i < MAX_SHOTS; i++){ // no sé que se passa
-            Shoot[i].position = (Vector2){data.pos.x + 30, data.pos.y + 30};
+            Shoot[i].position = (Vector2){playerData.pos.x + 30, playerData.pos.y + 30};
             Shoot[i].speed.x = 3;
             Shoot[i].radius = 10;
             Shoot[i].active = false;
@@ -110,7 +151,7 @@ int windowDimensions[2];
     }
 
     for(int i = 0; i < MAX_SHOTS_LEFT; i++){ // no sé que se passa esquérdita
-            Shoot_left[i].position_left = (Vector2){data.pos.x + 30, data.pos.y + 30};
+            Shoot_left[i].position_left = (Vector2){playerData.pos.x + 30, playerData.pos.y + 30};
             Shoot_left[i].speed_left.x = 3;
             Shoot_left[i].radius_left = 10;
             Shoot_left[i].active_left = false;
@@ -133,7 +174,7 @@ int windowDimensions[2];
         framesCounter++;
 
         // gravidade
-        Rectangle foot = {data.pos.x, data.pos.y, data.rec.width, data.rec.height};
+        Rectangle foot = {playerData.pos.x, playerData.pos.y, playerData.rec.width, playerData.rec.height};
 
         // PLATFORM RECTANGLES
         Rectangle BluePlatform = {windowDimensions[0]/2 - 25, windowDimensions[1] - 50, 50, 50};
@@ -142,19 +183,19 @@ int windowDimensions[2];
         
         for(int i = 0; i < MAX_SHOTS; i++){
         }
-        if(!isOnGround(data, windowDimensions[1])){
-            data.pos.y += gravity;
+        if(!isOnGround(playerData, windowDimensions[1])){
+            playerData.pos.y += gravity;
         };
         if(CheckCollisionRecs(foot, BluePlatform)){
             
-            data.pos.y = windowDimensions[1] - BluePlatform.height - data.rec.height - 1;
+            playerData.pos.y = windowDimensions[1] - BluePlatform.height - playerData.rec.height - 1;
             acceleration = 0;
             gravity = 0; 
 
         }
         if(CheckCollisionRecs(foot, YellowPlatform)){
             
-            data.pos.y = YellowPlatform.y - data.rec.height - 1;
+            playerData.pos.y = YellowPlatform.y - playerData.rec.height - 1;
             acceleration = 0;
             gravity = 0;
         }
@@ -165,7 +206,7 @@ int windowDimensions[2];
             initAnim = 0;
             endAnim = 4;
             shoot_right = 1;
-            data.pos.x += 10;
+            playerData.pos.x += 10;
             
             if (framesCounter >= (60/framesSpeed))
         {
@@ -174,7 +215,7 @@ int windowDimensions[2];
 
                  if (currentFrame > endAnim || currentFrame < initAnim) currentFrame = initAnim;
 
-                data.rec.x = (float)currentFrame*(float)data.rec.width;
+                playerData.rec.x = (float)currentFrame*(float)playerData.rec.width;
         }
         }
 
@@ -190,53 +231,53 @@ int windowDimensions[2];
 
                 if (currentFrame > endAnim || currentFrame < initAnim) currentFrame = initAnim;
 
-                data.rec.x = (float)currentFrame*(float)data.rec.width;
+                playerData.rec.x = (float)currentFrame*(float)playerData.rec.width;
         }
 
             shoot_right = 0;
-            data.pos.x -= 10;
+            playerData.pos.x -= 10;
         }
-        if(IsKeyDown(KEY_W) && ((isOnGround(data, windowDimensions[1]) || CheckCollisionRecs(foot, YellowPlatform) || CheckCollisionRecs(foot, BluePlatform)))){
+        if(IsKeyDown(KEY_W) && ((isOnGround(playerData, windowDimensions[1]) || CheckCollisionRecs(foot, YellowPlatform) || CheckCollisionRecs(foot, BluePlatform)))){
 
             gravity -= 30;
-            data.pos.y -= 1;
+            playerData.pos.y -= 1;
 
             if(shoot_right){
                 initAnim = 6;
                 endAnim = 6;
 
-                data.rec.x = 6*(float)data.rec.width;
+                playerData.rec.x = 6*(float)playerData.rec.width;
             }
 
             if(!shoot_right){
                 initAnim = 8;
                 endAnim = 8;
 
-                data.rec.x = 8*(float)data.rec.width;
+                playerData.rec.x = 8*(float)playerData.rec.width;
             }
-        }else if (IsKeyDown(KEY_W) && (!isOnGround(data, windowDimensions[1]) || !CheckCollisionRecs(foot, YellowPlatform) || !CheckCollisionRecs(foot, BluePlatform)) && gravity >= 1)
+        }else if (IsKeyDown(KEY_W) && (!isOnGround(playerData, windowDimensions[1]) || !CheckCollisionRecs(foot, YellowPlatform) || !CheckCollisionRecs(foot, BluePlatform)) && gravity >= 1)
         {
             acceleration = 0.18;
         }else{
-            if(!isOnGround(data, windowDimensions[1]) && !CheckCollisionRecs(foot, YellowPlatform) && !CheckCollisionRecs(foot, BluePlatform))
+            if(!isOnGround(playerData, windowDimensions[1]) && !CheckCollisionRecs(foot, YellowPlatform) && !CheckCollisionRecs(foot, BluePlatform))
             acceleration = 1.5;
         }
-        if(isOnGround(data, windowDimensions[1]) && !IsKeyDown(KEY_D) && !IsKeyDown(KEY_A)){
-            data.pos.y = windowDimensions[1] - data.rec.height;
+        if(isOnGround(playerData, windowDimensions[1]) && !IsKeyDown(KEY_D) && !IsKeyDown(KEY_A)){
+            playerData.pos.y = windowDimensions[1] - playerData.rec.height;
             gravity = 1;
 
             if (shoot_right) {
             initAnim = 0;
             endAnim = 0;
 
-            data.rec.x = 0*(float)data.rec.width; 
+            playerData.rec.x = 0*(float)playerData.rec.width; 
             }
 
             if (!shoot_right) {
             initAnim = 11;
             endAnim = 11;
 
-            data.rec.x = 11*(float)data.rec.width; 
+            playerData.rec.x = 11*(float)playerData.rec.width; 
             }    
         } 
         gravity += acceleration;
@@ -246,7 +287,7 @@ int windowDimensions[2];
         {
              for(int i = 0; i < MAX_SHOTS; i++){
                  if(!Shoot[i].active){
-                     Shoot[i].position = (Vector2){data.pos.x + 30, data.pos.y + 30};
+                     Shoot[i].position = (Vector2){playerData.pos.x + 30, playerData.pos.y + 30};
                      Shoot[i].active = true;
                      break;
                  }
@@ -261,10 +302,21 @@ int windowDimensions[2];
                     Shoot[i].active = false;
                 }
                 if(Shoot[i].active){
-                    DrawCircleV(Shoot[i].position, Shoot[i].radius, BLUE);
+                initAnim = 0;
+                endAnim = 4;
+
+                if (framesCounter >= (60/framesSpeed))
+                {
+                    framesCounter = 0;
+                    currentFrame++;
+
+                    if (currentFrame > endAnim || currentFrame < initAnim) currentFrame = initAnim;
+
+                    playerData.rec.x = (float)currentFrame*(float)playerData.rec.width;
+                }
                 }
                 if(Shoot[i].lifespawn >= 800){
-                    Shoot[i].position = (Vector2){data.pos.x + 30, data.pos.y + 30};
+                    Shoot[i].position = (Vector2){playerData.pos.x + 30, playerData.pos.y + 30};
                     Shoot[i].speed = (Vector2){0, 0};
                     Shoot[i].lifespawn = 0;
                     Shoot[i].active = false;
@@ -275,7 +327,7 @@ int windowDimensions[2];
         {
              for(int i = 0; i < MAX_SHOTS_LEFT; i++){
                  if(!Shoot_left[i].active_left){
-                     Shoot_left[i].position_left = (Vector2){data.pos.x + 30, data.pos.y + 30};
+                     Shoot_left[i].position_left = (Vector2){playerData.pos.x + 30, playerData.pos.y + 30};
                      Shoot_left[i].active_left = true;
                      break;
                  }
@@ -293,7 +345,7 @@ int windowDimensions[2];
                     DrawCircleV(Shoot_left[i].position_left, Shoot_left[i].radius_left, BLUE);
                 }
                 if(Shoot_left[i].lifespawn_left >= 800){
-                    Shoot_left[i].position_left = (Vector2){data.pos.x + 30, data.pos.y + 30};
+                    Shoot_left[i].position_left = (Vector2){playerData.pos.x + 30, playerData.pos.y + 30};
                     Shoot_left[i].speed_left = (Vector2){0, 0};
                     Shoot_left[i].lifespawn_left = 0;
                     Shoot_left[i].active_left = false;
@@ -301,17 +353,36 @@ int windowDimensions[2];
             }
         }
 
+        // memory animation
+        initAnim = 0;
+        endAnim = 1;
+
+        if (framesCounter >= (60/framesSpeed))
+        {
+            framesCounter = 0;
+            currentFrame++;
+
+            if (currentFrame > endAnim || currentFrame < initAnim) currentFrame = initAnim;
+
+            memoryData.rec.x = (float)currentFrame*(float)memoryData.rec.width;
+        }
+
         /* bool platformCollision = CheckCollisionRecs(foot, BluePlatform);
         bool onFloor = CheckCollisionRecs(foot, floor);  */        
         /* if(onFloor){
-            data.pos.y = windowDimensions[1] + data.rec.y;
+            playerData.pos.y = windowDimensions[1] + playerData.rec.y;
         } */
          BeginDrawing();
         ClearBackground(WHITE);
         DrawTextureRec(
             player,
-            data.rec,
-            data.pos,
+            playerData.rec,
+            playerData.pos,
+            WHITE);      
+         DrawTextureRec(
+            memory,
+            memoryData.rec,
+            memoryData.pos,
             WHITE);      
 
 
@@ -564,18 +635,6 @@ int main(void){
     int framesCounter = 0;
 
     // Player Animation
-    Texture2D  player = LoadTexture("./Sprites/player_sheet.png"); 
-    // player variables
-    AnimData playerData;
-    playerData.rec.width = (float)(player.width/19); 
-    playerData.rec.height = (float)player.height;
-    playerData.rec.x = 0.0f;
-    playerData.rec.y = 0.0f;
-    playerData.pos.x = width/2 - playerData.rec.width/2;
-    playerData.pos.y = height - playerData.rec.height;
-    playerData.frame = 0;
-    playerData.updateTime = 1.0/12.0;
-    playerData.runningTime = 0.0;
     
     // Game FPS
     SetTargetFPS(60);
@@ -587,8 +646,6 @@ int main(void){
     while(current_screen!=QUIT){
         if(current_screen==MENU) current_screen = menu(width, height);
         else if(current_screen==GAMEPLAY) current_screen = gameplay(width, height,
-        playerData,
-        player,
         framesSpeed,
         framesCounter);
         else if(current_screen==DEATH) current_screen = death(width, height);
