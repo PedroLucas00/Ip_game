@@ -482,6 +482,10 @@ int main(void){
     const int width = 1280;
     const int height = 720;
     InitWindow(width, height, "A Code Adventure");
+
+    // Game Window Icon
+    Image game_icon = LoadImage("images/game_icon.png");
+    SetWindowIcon(game_icon);
     
     // Game FPS
     SetTargetFPS(60);
