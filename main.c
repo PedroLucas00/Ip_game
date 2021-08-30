@@ -131,8 +131,11 @@ int gameplay(int width, int height){
             scarfyData.pos,
             RAYWHITE);
         // gravidade
-        //bool collision_player_platform = GetCollisionRec(scarfyData.rec, prim.rec);
+        Rectangle foot = {scarfyData.pos.x, scarfyData.pos.y, scarfyData.rec.width, scarfyData.rec.height};
+
+        // PLATFORM RECTANGLES
         Rectangle BluePlatform = {windowDimensions[0]/2 - 25, windowDimensions[1] - 50, 50, 50};
+        Rectangle YellowPlatform = {windowDimensions[0]/2 + 120, windowDimensions[1] - 220, 125, 50};
         
         
         for(int i = 0; i < MAX_SHOTS; i++){
@@ -140,6 +143,19 @@ int gameplay(int width, int height){
         if(!isOnGround(scarfyData, windowDimensions[1])){
             scarfyData.pos.y += gravity;
         };
+        if(CheckCollisionRecs(foot, BluePlatform)){
+            
+            scarfyData.pos.y = windowDimensions[1] - BluePlatform.height - scarfyData.rec.height - 1;
+            acceleration = 0;
+            gravity = 0; 
+
+        }
+        if(CheckCollisionRecs(foot, YellowPlatform)){
+            
+            scarfyData.pos.y = YellowPlatform.y - scarfyData.rec.height - 1;
+            acceleration = 0;
+            gravity = 0;
+        }
 
         // controles basicos 
         if (IsKeyDown(KEY_D))
@@ -152,15 +168,15 @@ int gameplay(int width, int height){
             shoot_right = 0;
             scarfyData.pos.x -= 10;
         }
-        if(IsKeyDown(KEY_W) && isOnGround(scarfyData, windowDimensions[1])){
+        if(IsKeyDown(KEY_W) && ((isOnGround(scarfyData, windowDimensions[1]) || CheckCollisionRecs(foot, YellowPlatform) || CheckCollisionRecs(foot, BluePlatform)))){
             gravity -= 30;
             scarfyData.pos.y -= 1;
 
-        }else if (IsKeyDown(KEY_W) && !isOnGround(scarfyData, windowDimensions[1]) && gravity >= 1)
+        }else if (IsKeyDown(KEY_W) && (!isOnGround(scarfyData, windowDimensions[1]) || !CheckCollisionRecs(foot, YellowPlatform) || !CheckCollisionRecs(foot, BluePlatform)) && gravity >= 1)
         {
             acceleration = 0.18;
         }else{
-            if(!isOnGround(scarfyData, windowDimensions[1]))
+            if(!isOnGround(scarfyData, windowDimensions[1]) && !CheckCollisionRecs(foot, YellowPlatform) && !CheckCollisionRecs(foot, BluePlatform))
             acceleration = 1.5;
         }
         if(isOnGround(scarfyData, windowDimensions[1])){
@@ -228,19 +244,16 @@ int gameplay(int width, int height){
                 }
             }
         }
-        Rectangle foot = {scarfyData.pos.x, scarfyData.pos.y, scarfyData.rec.width, scarfyData.rec.height};
         /* bool platformCollision = CheckCollisionRecs(foot, BluePlatform);
         bool onFloor = CheckCollisionRecs(foot, floor);  */        
         /* if(onFloor){
             scarfyData.pos.y = windowDimensions[1] + scarfyData.rec.y;
         } */
-        if(CheckCollisionRecs(foot, BluePlatform)){
-            gravity = 0;
-            scarfyData.pos.y = windowDimensions[1] - BluePlatform.height - scarfyData.rec.height;
-        }
+        
+
 
         DrawRectangle(BluePlatform.x, BluePlatform.y, BluePlatform.width, BluePlatform.height, RED);
-        DrawRectangle(50, 50, 50, 50, YELLOW);
+        DrawRectangle(YellowPlatform.x, YellowPlatform.y, YellowPlatform.width, YellowPlatform.height, YELLOW);
         EndDrawing();
     }
 }
