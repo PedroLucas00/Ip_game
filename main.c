@@ -153,6 +153,9 @@ int windowDimensions[2];
     ACMData.updateTime = 1.0/12.0;
     ACMData.runningTime = 0.0;
 
+    // platform sprite texture
+    Texture2D  platform = LoadTexture("./Sprites/sand_platform.png");
+
     level_rec prim;
 
     for(int i = 0; i < MAX_SHOTS; i++){ // no sé que se passa
@@ -316,18 +319,7 @@ int windowDimensions[2];
                     Shoot[i].active = false;
                 }
                 if(Shoot[i].active){
-                initAnim = 0;
-                endAnim = 4;
-
-                if (framesCounter >= (60/framesSpeed))
-                {
-                    framesCounter = 0;
-                    currentFrame++;
-
-                    if (currentFrame > endAnim || currentFrame < initAnim) currentFrame = initAnim;
-
-                    playerData.rec.x = (float)currentFrame*(float)playerData.rec.width;
-                }
+                    DrawCircleV(Shoot[i].position, Shoot[i].radius, BLUE);
                 }
                 if(Shoot[i].lifespawn >= 800){
                     Shoot[i].position = (Vector2){playerData.pos.x + 30, playerData.pos.y + 30};
@@ -404,7 +396,7 @@ int windowDimensions[2];
             WHITE);            
 
 
-        DrawRectangle(BluePlatform.x, BluePlatform.y, BluePlatform.width, BluePlatform.height, RED);
+        DrawRectangle(BluePlatform.x, BluePlatform.y, BluePlatform.width, BluePlatform.height, BLUE);
         DrawRectangle(YellowPlatform.x, YellowPlatform.y, YellowPlatform.width, YellowPlatform.height, YELLOW);
         EndDrawing();
     }
