@@ -99,7 +99,6 @@ int windowDimensions[2];
 
     // Player Animation
     level_rec prim;
->>>>>>> acd79c28524071d6fced198e3cf3a8411c526d13
 
     for(int i = 0; i < MAX_SHOTS; i++){ // no sé que se passa
             Shoot[i].position = (Vector2){data.pos.x + 30, data.pos.y + 30};
@@ -134,7 +133,7 @@ int windowDimensions[2];
         framesCounter++;
 
         // gravidade
-        Rectangle foot = {scarfyData.pos.x, scarfyData.pos.y, scarfyData.rec.width, scarfyData.rec.height};
+        Rectangle foot = {data.pos.x, data.pos.y, data.rec.width, data.rec.height};
 
         // PLATFORM RECTANGLES
         Rectangle BluePlatform = {windowDimensions[0]/2 - 25, windowDimensions[1] - 50, 50, 50};
@@ -148,14 +147,14 @@ int windowDimensions[2];
         };
         if(CheckCollisionRecs(foot, BluePlatform)){
             
-            scarfyData.pos.y = windowDimensions[1] - BluePlatform.height - scarfyData.rec.height - 1;
+            data.pos.y = windowDimensions[1] - BluePlatform.height - data.rec.height - 1;
             acceleration = 0;
             gravity = 0; 
 
         }
         if(CheckCollisionRecs(foot, YellowPlatform)){
             
-            scarfyData.pos.y = YellowPlatform.y - scarfyData.rec.height - 1;
+            data.pos.y = YellowPlatform.y - data.rec.height - 1;
             acceleration = 0;
             gravity = 0;
         }
