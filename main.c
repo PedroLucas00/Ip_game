@@ -219,7 +219,7 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
         Rectangle foot = {playerData.pos.x, playerData.pos.y, playerData.rec.width, playerData.rec.height};
 
         // PLATFORM RECTANGLES
-        Rectangle BluePlatform = {windowDimensions[0]/2 - 25, height, height-30, 1280, 40};
+        Rectangle BluePlatform = {windowDimensions[0]/2 - 25, windowDimensions[1] - 40, 40, 40};
         Rectangle YellowPlatform = {windowDimensions[0]/2 + 120, windowDimensions[1] - 200, 120, 40};
         Rectangle ThirdPlatform = {windowDimensions[0]/2 - 150, windowDimensions[1] - 270, 120, 40};
         
