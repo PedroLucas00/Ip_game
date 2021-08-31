@@ -10,6 +10,7 @@ typedef enum{
     RESUME,
     DEATH,
     QUIT,
+    SUCCESS,
 }screen;
 
 typedef struct {
@@ -67,6 +68,7 @@ int menu(int width, int height);
 int gameplay(int width, int height, int framesSpeed, int framesCounter);
 int pause(int width, int height);
 int death(int width, int height);
+int success(int width, int height);
 
 // Gameplay work flow
 int gameplay(int width, int height, int framesSpeed, int framesCounter){
@@ -421,18 +423,109 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
             ACM,
             ACMData.rec,
             ACMData.pos,
-            WHITE);            
-
-
+            WHITE);
+        
         DrawRectangle(BluePlatform.x, BluePlatform.y, BluePlatform.width, BluePlatform.height, BLUE);
         DrawRectangle(YellowPlatform.x, YellowPlatform.y, YellowPlatform.width, YellowPlatform.height, YELLOW);
         DrawRectangle(ThirdPlatform.x, ThirdPlatform.y, ThirdPlatform.width, ThirdPlatform.height, PURPLE);
 
         EndDrawing();
         
+        // Shortcut to transition between screens
+        if(IsKeyReleased(KEY_O)||IsKeyReleased(KEY_P)) UnloadSound(gameplay_background_audio);
+        if(IsKeyReleased(KEY_O)) return DEATH;
+        if(IsKeyReleased(KEY_P)) return SUCCESS;
+        
         // Check if the background sound is playing
         if(!IsSoundPlaying(gameplay_background_audio)) PlaySound(gameplay_background_audio);
     }
+}
+
+// Success screen
+int success(int width, int height){
+    // Success Menu Variables
+    int selected_successmenu_option = 1;
+    // Success Menu Options Positions
+    Vector2 PLAY_AGAIN_position = {886, 372}, GO_TO_MENU_position = {886, 442}, QUIT_position = {886, 581}, VICTORY_position = {22, height-(height/6)};
+    // Define VICTORY font size
+    int VICTORY_fontsize = 120;
+    // Define text font size
+    int TEXT_fontsize = 60;
+    // Starting audio device
+    InitAudioDevice();
+    // Define Success Menu Audio
+    Sound menu_selecting_audio = LoadSound("audio/menu_selecting.wav");
+    Sound menu_confirm_audio = LoadSound("audio/menu_confirm.wav");
+    Sound menu_return_audio = LoadSound("audio/menu_return.wav");
+    Sound menu_background_audio = LoadSound("audio/menu_background_audio.wav");
+    Sound success_audio = LoadSound("audio/success_audio.mp3");
+    // Define Text Font
+    Font successmenu_font = LoadFontEx("fonts/Oswald-SemiBold.ttf", TEXT_fontsize, 0, 0);
+    Font VICTORY_font = LoadFontEx("fonts/Oswald-Bold.ttf", VICTORY_fontsize, 0, 0);
+    // Define Success Background Image
+    Texture2D success_background = LoadTexture("images/success_background.png");
+    // Set Success Menu Volume
+    SetSoundVolume(menu_selecting_audio, 0.8);
+    SetSoundVolume(menu_confirm_audio, 0.8);
+    SetSoundVolume(menu_return_audio, 0.8);
+    SetSoundVolume(menu_background_audio, 0.4);
+    SetSoundVolume(success_audio, 0.5);
+    // Play Start Menu Sound
+    PlaySound(menu_selecting_audio);
+    PlaySound(success_audio);
+    // Loop while waiting for a ENTER press
+    while(!IsKeyReleased(KEY_ENTER)){
+        // Menu Work Flow
+        if(selected_successmenu_option==4) selected_successmenu_option = 1;
+        if(selected_successmenu_option==0) selected_successmenu_option = 3;
+        if(IsKeyReleased(KEY_UP)||IsKeyReleased(KEY_DOWN)) PlaySound(menu_selecting_audio);
+        if(IsKeyReleased(KEY_UP)) selected_successmenu_option--;
+        if(IsKeyReleased(KEY_DOWN)) selected_successmenu_option++;
+        // Menu Drawing
+        BeginDrawing();
+        DrawTexture(success_background, 0, 0, WHITE);
+        DrawTextEx(VICTORY_font, "VICTORY", VICTORY_position, VICTORY_fontsize, 5, RED);
+        if(selected_successmenu_option==1){
+            DrawTextEx(successmenu_font, "PLAY AGAIN", PLAY_AGAIN_position, TEXT_fontsize, 5, RED);
+            DrawTextEx(successmenu_font, "GO TO MENU", GO_TO_MENU_position, TEXT_fontsize, 5, WHITE);
+            DrawTextEx(successmenu_font, "QUIT", QUIT_position, TEXT_fontsize, 5, WHITE);
+        }
+        else if(selected_successmenu_option==2){
+            DrawTextEx(successmenu_font, "PLAY AGAIN", PLAY_AGAIN_position, TEXT_fontsize, 5, WHITE);
+            DrawTextEx(successmenu_font, "GO TO MENU", GO_TO_MENU_position, TEXT_fontsize, 5, RED);
+            DrawTextEx(successmenu_font, "QUIT", QUIT_position, TEXT_fontsize, 5, WHITE);
+        }
+        else if(selected_successmenu_option==3){
+            DrawTextEx(successmenu_font, "PLAY AGAIN", PLAY_AGAIN_position, TEXT_fontsize, 5, WHITE);
+            DrawTextEx(successmenu_font, "GO TO MENU", GO_TO_MENU_position, TEXT_fontsize, 5, WHITE);
+            DrawTextEx(successmenu_font, "QUIT", QUIT_position, TEXT_fontsize, 5, RED);
+        }
+        EndDrawing();
+
+        // Check if the background sound is playing
+        if(!IsSoundPlaying(menu_background_audio)) PlaySound(menu_background_audio);
+    }
+
+    // Ending Death Menu Background Audio
+    UnloadSound(menu_background_audio);
+    UnloadSound(success_audio);
+    
+    // After press ENTER key
+    if(selected_successmenu_option==1){
+        PlaySound(menu_confirm_audio);
+        return GAMEPLAY;
+    }
+    if(selected_successmenu_option==2){
+        PlaySound(menu_return_audio);
+        return MENU;
+    }
+    if(selected_successmenu_option==3) return QUIT;
+
+    // Ending audio device
+    UnloadSound(menu_selecting_audio);
+    UnloadSound(menu_confirm_audio);
+    UnloadSound(menu_return_audio);
+    CloseAudioDevice();
 }
 
 // Pause menu
@@ -440,7 +533,7 @@ int pause(int width, int height){
     // Pause Menu Variables
     int selected_pausemenu_option = 1;
     // Pause Menu Options Positions
-    Vector2 RESUME_position = {566, 268}, GO_TO_MENU_position = {522, 339}, QUIT_position = {600, 411};
+    Vector2 RESUME_position = {563, 256}, GO_TO_MENU_position = {519, 328}, QUIT_position = {594, 399};
     // Define text font size
     int TEXT_fontsize = 60;
     // Starting audio device
@@ -471,7 +564,7 @@ int pause(int width, int height){
         if(IsKeyReleased(KEY_DOWN)) selected_pausemenu_option++;
         // Menu Drawing
         BeginDrawing();
-        DrawTexture(pause_background, 416, 218, WHITE);
+        DrawTexture(pause_background, 415, 217, WHITE);
         if(selected_pausemenu_option==1){
             DrawTextEx(pausemenu_font, "RESUME", RESUME_position, TEXT_fontsize, 5, RED);
             DrawTextEx(pausemenu_font, "GO TO MENU", GO_TO_MENU_position, TEXT_fontsize, 5, WHITE);
@@ -519,7 +612,7 @@ int death(int width, int height){
     // Death Menu Variables
     int selected_deathmenu_option = 1;
     // Death Menu Options Positions
-    Vector2 TRY_AGAIN_position = {188, 372}, GO_TO_MENU_position = {153, 442}, QUIT_position = {303, 581}, GAMEOVER_position = {width-(width/3)-(width/120), height-(height/6)};
+    Vector2 TRY_AGAIN_position = {188, 372}, GO_TO_MENU_position = {153, 442}, QUIT_position = {303, 581}, GAMEOVER_position = {width-(width/3)-(width/120)-3, height-(height/6)};
     // Define GAMEOVER font size
     int GAMEOVER_fontsize = 120;
     // Define text font size
@@ -690,10 +783,9 @@ int main(void){
     // Loop game screen change
     while(current_screen!=QUIT){
         if(current_screen==MENU) current_screen = menu(width, height);
-        else if(current_screen==GAMEPLAY) current_screen = gameplay(width, height,
-        framesSpeed,
-        framesCounter);
+        else if(current_screen==GAMEPLAY) current_screen = gameplay(width, height, framesSpeed, framesCounter);
         else if(current_screen==DEATH) current_screen = death(width, height);
+        else if(current_screen==SUCCESS) current_screen = success(width, height);
     }
     
     // THE END
