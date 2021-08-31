@@ -89,6 +89,7 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
     // variables to choose between animations intended
     int initAnim, endAnim;
     int currentFrame = 0;
+    int Shooting  = 0;
 
     // acceleration due to gravity (pixels/s)/s
     float gravity = 0;
@@ -123,7 +124,7 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
     tiroData.rec.height = (float)tiro.height;
     tiroData.rec.x = 0.0f;
     tiroData.rec.y = 0.0f;
-    tiroData.pos.x = width/2 - tiroData.rec.width/2;
+    tiroData.pos.x = width/2 - tiroData.rec.width;
     tiroData.pos.y = height - tiroData.rec.height;
     tiroData.frame = 0;
     tiroData.updateTime = 1.0/12.0;
@@ -208,9 +209,9 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
         Rectangle foot = {playerData.pos.x, playerData.pos.y, playerData.rec.width, playerData.rec.height};
 
         // PLATFORM RECTANGLES
-        Rectangle BluePlatform = {windowDimensions[0]/2 - 25, windowDimensions[1] - 50, 50, 50};
-        Rectangle YellowPlatform = {windowDimensions[0]/2 + 120, windowDimensions[1] - 220, 125, 50};
-        Rectangle ThirdPlatform = {windowDimensions[0]/2 - 150, windowDimensions[1] - 290, 125, 50};
+        Rectangle BluePlatform = {windowDimensions[0]/2 - 25, height, height-30, 40};
+        Rectangle YellowPlatform = {windowDimensions[0]/2 + 120, windowDimensions[1] - 200, 120, 40};
+        Rectangle ThirdPlatform = {windowDimensions[0]/2 - 150, windowDimensions[1] - 270, 120, 40};
         
         for(int i = 0; i < MAX_SHOTS; i++){
         }
@@ -330,9 +331,23 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
                 Shoot[i].lifespawn++;
                 if(Shoot[i].position.x >= windowDimensions[0] + Shoot[i].radius){
                     Shoot[i].active = false;
+                    Shooting = 0;
                 }
                 if(Shoot[i].active){
-                    DrawCircleV(Shoot[i].position, Shoot[i].radius, BLUE);
+                    initAnim = 0;
+                    endAnim = 1;
+                    Shooting  = 1;
+
+                    if (framesCounter >= (60/framesSpeed))
+                    {
+                        framesCounter = 0;
+                        currentFrame++;
+
+                        if (currentFrame > endAnim || currentFrame < initAnim) currentFrame = initAnim;
+
+                        tiroData.rec.x = (float)currentFrame*(float)tiroData.rec.width;
+                    }
+                    tiroData.pos = Shoot[i].position;
                 }
                 if(Shoot[i].lifespawn >= 800){
                     Shoot[i].position = (Vector2){playerData.pos.x + 30, playerData.pos.y + 30};
@@ -359,9 +374,23 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
                 Shoot_left[i].lifespawn_left++;
                 if(Shoot_left[i].position_left.x <= 0 - Shoot[i].radius){
                     Shoot_left[i].active_left = false;
+                    Shooting = 0;
                 }
                 if(Shoot_left[i].active_left){
-                    DrawCircleV(Shoot_left[i].position_left, Shoot_left[i].radius_left, BLUE);
+                    initAnim = 0;
+                    endAnim = 1;
+                    Shooting  = 1;
+
+                    if (framesCounter >= (60/framesSpeed))
+                    {
+                        framesCounter = 0;
+                        currentFrame++;
+
+                        if (currentFrame > endAnim || currentFrame < initAnim) currentFrame = initAnim;
+
+                        tiroData.rec.x = (float)currentFrame*(float)tiroData.rec.width;
+                    }
+                    tiroData.pos = Shoot_left[i].position_left;
                 }
                 if(Shoot_left[i].lifespawn_left >= 800){
                     Shoot_left[i].position_left = (Vector2){playerData.pos.x + 30, playerData.pos.y + 30};
@@ -393,29 +422,42 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
         // Gameplay Drawing
         BeginDrawing();
         DrawTexture(gameplay_background, 0, 0, WHITE);
+        DrawTexture(platform, windowDimensions[0]/2 - 25, height-30, WHITE);
+
+        DrawTexture(platform, windowDimensions[0]/2 + 120, height - 200, WHITE);
+        DrawTexture(platform, windowDimensions[0]/2 + 160, height - 200, WHITE);
+        DrawTexture(platform, windowDimensions[0]/2 + 200, height - 200, WHITE);
+
+        DrawTexture(platform, windowDimensions[0]/2 - 150, height - 270, WHITE);
+        DrawTexture(platform, windowDimensions[0]/2 - 110, height - 270, WHITE);
+        DrawTexture(platform, windowDimensions[0]/2 - 70, height - 270, WHITE);
+
 
         DrawTextureRec(
             player,
             playerData.rec,
             playerData.pos,
             WHITE);
-        
         DrawTextureRec(
             memory,
             memoryData.rec,
             memoryData.pos,
             WHITE);
-
         DrawTextureRec(
             ACM,
             ACMData.rec,
             ACMData.pos,
-            WHITE);            
+            WHITE);
+         if (Shooting){       
+            DrawTextureRec(
+                tiro,
+                tiroData.rec,
+                tiroData.pos,
+                WHITE);
+        }    
 
 
-        DrawRectangle(BluePlatform.x, BluePlatform.y, BluePlatform.width, BluePlatform.height, BLUE);
-        DrawRectangle(YellowPlatform.x, YellowPlatform.y, YellowPlatform.width, YellowPlatform.height, YELLOW);
-        DrawRectangle(ThirdPlatform.x, ThirdPlatform.y, ThirdPlatform.width, ThirdPlatform.height, PURPLE);
+        
 
         EndDrawing();
         
