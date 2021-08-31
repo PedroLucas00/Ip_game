@@ -213,6 +213,17 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
         Rectangle YellowPlatform = {windowDimensions[0]/2 + 120, windowDimensions[1] - 200, 120, 40};
         Rectangle ThirdPlatform = {windowDimensions[0]/2 - 150, windowDimensions[1] - 270, 120, 40};
         
+
+        if(playerData.pos.y <= -1){
+            playerData.pos.y = 0;
+        }
+        if(playerData.pos.x <= 0){
+            playerData.pos.x = 0;
+        }
+        if(playerData.pos.x >= windowDimensions[0]){
+            playerData.pos.x = windowDimensions[0];
+        }
+
         for(int i = 0; i < MAX_SHOTS; i++){
         }
 
