@@ -160,6 +160,16 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
 
     // platform sprite texture
     Texture2D  platform = LoadTexture("./Sprites/sand_platform.png");
+    // Define writing variables
+    Font pausemenu_font = LoadFontEx("fonts/Oswald-SemiBold.ttf", 40, 0, 0);
+    Vector2 posText;
+    posText.x = ACMData.pos.x-710;
+    posText.y = ACMData.pos.y-30;
+
+    // ACM platform position
+    Vector2 ACMPlatformPos;
+    ACMPlatformPos.x = ACMData.pos.x;
+    ACMPlatformPos.y = ACMData.pos.y+115;
 
     level_rec prim;
 
@@ -209,7 +219,7 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
         Rectangle foot = {playerData.pos.x, playerData.pos.y, playerData.rec.width, playerData.rec.height};
 
         // PLATFORM RECTANGLES
-        Rectangle BluePlatform = {windowDimensions[0]/2 - 25, height, height-30, 40};
+        Rectangle BluePlatform = {windowDimensions[0]/2 - 25, height, height-30, 1280, 40};
         Rectangle YellowPlatform = {windowDimensions[0]/2 + 120, windowDimensions[1] - 200, 120, 40};
         Rectangle ThirdPlatform = {windowDimensions[0]/2 - 150, windowDimensions[1] - 270, 120, 40};
         
@@ -432,16 +442,30 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
         
         // Gameplay Drawing
         BeginDrawing();
-        DrawTexture(gameplay_background, 0, 0, WHITE);
-        DrawTexture(platform, windowDimensions[0]/2 - 25, height-30, WHITE);
+        DrawTexture(gameplay_background, 0, 0, WHITE);        
 
+        // Drawing first platform
         DrawTexture(platform, windowDimensions[0]/2 + 120, height - 200, WHITE);
         DrawTexture(platform, windowDimensions[0]/2 + 160, height - 200, WHITE);
         DrawTexture(platform, windowDimensions[0]/2 + 200, height - 200, WHITE);
 
+        // Drawing second platform
         DrawTexture(platform, windowDimensions[0]/2 - 150, height - 270, WHITE);
         DrawTexture(platform, windowDimensions[0]/2 - 110, height - 270, WHITE);
         DrawTexture(platform, windowDimensions[0]/2 - 70, height - 270, WHITE);
+
+        // Drawing ACM platform
+        DrawTexture(platform, ACMPlatformPos.x, ACMPlatformPos.y, WHITE);
+        DrawTexture(platform, ACMPlatformPos.x + 200, ACMPlatformPos.y, WHITE);
+        DrawTexture(platform, ACMPlatformPos.x + 160, ACMPlatformPos.y, WHITE);
+        DrawTexture(platform, ACMPlatformPos.x + 120, ACMPlatformPos.y, WHITE);
+        DrawTexture(platform, ACMPlatformPos.x + 80, ACMPlatformPos.y, WHITE);
+        DrawTexture(platform, ACMPlatformPos.x + 40, ACMPlatformPos.y, WHITE);
+        DrawTexture(platform, ACMPlatformPos.x, ACMPlatformPos.y, WHITE);
+        DrawTexture(platform, ACMPlatformPos.x - 40, ACMPlatformPos.y, WHITE);
+        DrawTexture(platform, ACMPlatformPos.x - 80, ACMPlatformPos.y, WHITE);
+        DrawTexture(platform, ACMPlatformPos.x - 120, ACMPlatformPos.y, WHITE);
+        
 
 
         DrawTextureRec(
@@ -465,10 +489,14 @@ int gameplay(int width, int height, int framesSpeed, int framesCounter){
                 tiroData.rec,
                 tiroData.pos,
                 WHITE);
-        }    
-
-
-        
+        } 
+                
+        DrawTextEx(
+        pausemenu_font,
+        "Derrote ACM, 'O Destruidor de Notas' e sua horda de magos mulittle para libertar a memoria!",
+        posText,
+        35, 1,
+        LIME);
 
         EndDrawing();
         
